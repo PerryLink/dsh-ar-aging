@@ -1,0 +1,80 @@
+{
+  "run_id": "ar-aging-1793632161949",
+  "scope": "AR-AGING-S1",
+  "status": "pass",
+  "counted": false,
+  "note": "synthetic AR ledger only; no customer data",
+  "metrics": [
+    {
+      "req_id": "AR-A01",
+      "metric": "ingest totals",
+      "threshold": "rows=13 customers=6 outstanding=772500000",
+      "actual": "rows=13 customers=6 outstanding=772500000",
+      "pass": true
+    },
+    {
+      "req_id": "AR-A02",
+      "metric": "aging buckets",
+      "threshold": "counts=4/2/2/1/2 sum=772500000",
+      "actual": "counts=4/2/2/1/2 sum=772500000",
+      "pass": true
+    },
+    {
+      "req_id": "AR-A03",
+      "metric": "overdue ratio",
+      "threshold": "overdue=549500000 ratio=0.7113",
+      "actual": "overdue=549500000 ratio=0.7113",
+      "pass": true
+    },
+    {
+      "req_id": "AR-A04",
+      "metric": "top overdue",
+      "threshold": "count=5 first=330000000",
+      "actual": "count=5 first=330000000",
+      "pass": true
+    },
+    {
+      "req_id": "AR-A05",
+      "metric": "summary CSV",
+      "threshold": "rows=7 sha and quote ok",
+      "actual": "rows=7 sha=ok quote=ok",
+      "pass": true
+    },
+    {
+      "req_id": "AR-A06",
+      "metric": "detail CSV",
+      "threshold": "rows=11 lines=12",
+      "actual": "rows=11 lines=12",
+      "pass": true
+    },
+    {
+      "req_id": "AR-A07",
+      "metric": "bad CSV row",
+      "threshold": "E_AR_CSV_ROW",
+      "actual": "E_AR_CSV_ROW",
+      "pass": true
+    },
+    {
+      "req_id": "AR-A08",
+      "metric": "invalid date",
+      "threshold": "E_AR_DATE_INVALID",
+      "actual": "E_AR_DATE_INVALID",
+      "pass": true
+    },
+    {
+      "req_id": "AR-A09",
+      "metric": "invalid amount",
+      "threshold": "E_AR_AMOUNT",
+      "actual": "E_AR_AMOUNT",
+      "pass": true
+    },
+    {
+      "req_id": "AR-A10",
+      "metric": "export path safety",
+      "threshold": "traversal rejected",
+      "actual": "E_AR_PATH_INVALID",
+      "pass": true
+    }
+  ],
+  "pass": true
+}

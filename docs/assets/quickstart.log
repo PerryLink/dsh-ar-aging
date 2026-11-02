@@ -1,0 +1,19 @@
+$ node samples/quickstart/run.mjs --check
+dsh-ar-aging quickstart - synthetic AR ledger (not customer data)
+13 invoices / 6 customers / CNY; outstanding 7,725,000.00 (11 open, 2 settled)
+aging 2026-06-30: overdue 5,495,000.00 of 7,725,000.00 (71.1%)
+bucket 0-30: 4 invoice(s), 2,230,000.00 (28.9%)
+bucket 31-60: 2 invoice(s), 1,620,000.00 (21.0%)
+bucket 61-90: 2 invoice(s), 455,000.00 (5.9%)
+bucket 91-180: 1 invoice(s), 2,100,000.00 (27.2%)
+bucket 180+: 2 invoice(s), 1,320,000.00 (17.1%)
+top overdue:
+  北方重工设备有限公司: 3,300,000.00 across 2 invoice(s), max 177d
+  华东精密制造有限公司: 960,000.00 across 1 invoice(s), max 22d
+  江南纺织, 苏州: 660,000.00 across 1 invoice(s), max 1d
+  深圳蓝海电子有限公司: 325,000.00 across 1 invoice(s), max 36d
+  环宇物流服务有限公司: 130,000.00 across 1 invoice(s), max 60d
+summary CSV exports/ar-aging-summary.csv: 7 rows, 718 bytes, sha256 4d7f4a64fd68...
+detail CSV exports/ar-aging-detail.csv: 11 rows, 1404 bytes, sha256 59bac75ad3df...
+golden samples/quickstart/expected/result.json matches
+quickstart ok

@@ -1,0 +1,279 @@
+{
+  "sample": "samples/quickstart/input/ar-ledger.csv",
+  "as_of": "2026-06-30",
+  "ingest": {
+    "source_sha256": "e200d9928f037b2584e64ecd3bd30c82de8bccf38dc49f1bfe8b13268457ace0",
+    "rows": 13,
+    "customers": 6,
+    "currency": "CNY",
+    "invoice_date_min": "2025-10-01",
+    "invoice_date_max": "2026-06-30",
+    "due_date_min": "2025-10-31",
+    "due_date_max": "2026-07-30",
+    "total_cents": 979500000,
+    "paid_cents": 207000000,
+    "outstanding_cents": 772500000,
+    "settled_rows": 2,
+    "open_rows": 11,
+    "preview": [
+      {
+        "customer": "华东精密制造有限公司",
+        "invoice_no": "INV-2026-0001",
+        "invoice_date": "2026-06-02",
+        "due_date": "2026-07-02",
+        "amount_cents": 128000000,
+        "currency": "CNY",
+        "paid_cents": 20000000,
+        "outstanding_cents": 108000000
+      },
+      {
+        "customer": "华东精密制造有限公司",
+        "invoice_no": "INV-2026-0002",
+        "invoice_date": "2026-05-08",
+        "due_date": "2026-06-08",
+        "amount_cents": 96000000,
+        "currency": "CNY",
+        "paid_cents": 0,
+        "outstanding_cents": 96000000
+      },
+      {
+        "customer": "华东精密制造有限公司",
+        "invoice_no": "INV-2026-0003",
+        "invoice_date": "2026-03-15",
+        "due_date": "2026-04-14",
+        "amount_cents": 54000000,
+        "currency": "CNY",
+        "paid_cents": 54000000,
+        "outstanding_cents": 0
+      },
+      {
+        "customer": "深圳蓝海电子有限公司",
+        "invoice_no": "INV-2026-0011",
+        "invoice_date": "2026-06-20",
+        "due_date": "2026-07-20",
+        "amount_cents": 78000000,
+        "currency": "CNY",
+        "paid_cents": 0,
+        "outstanding_cents": 78000000
+      },
+      {
+        "customer": "深圳蓝海电子有限公司",
+        "invoice_no": "INV-2026-0012",
+        "invoice_date": "2026-04-25",
+        "due_date": "2026-05-25",
+        "amount_cents": 42500000,
+        "currency": "CNY",
+        "paid_cents": 10000000,
+        "outstanding_cents": 32500000
+      }
+    ]
+  },
+  "aging": {
+    "as_of": "2026-06-30",
+    "currency": "CNY",
+    "totals": {
+      "invoices": 13,
+      "open_invoices": 11,
+      "settled_invoices": 2,
+      "amount_cents": 979500000,
+      "paid_cents": 207000000,
+      "outstanding_cents": 772500000,
+      "overdue_cents": 549500000,
+      "not_due_cents": 223000000,
+      "overdue_ratio": 0.7113
+    },
+    "buckets": [
+      {
+        "key": "0-30",
+        "label": "0-30 天",
+        "min_days": 0,
+        "max_days": 30,
+        "invoice_count": 4,
+        "outstanding_cents": 223000000,
+        "share": 0.2887
+      },
+      {
+        "key": "31-60",
+        "label": "31-60 天",
+        "min_days": 31,
+        "max_days": 60,
+        "invoice_count": 2,
+        "outstanding_cents": 162000000,
+        "share": 0.2097
+      },
+      {
+        "key": "61-90",
+        "label": "61-90 天",
+        "min_days": 61,
+        "max_days": 90,
+        "invoice_count": 2,
+        "outstanding_cents": 45500000,
+        "share": 0.0589
+      },
+      {
+        "key": "91-180",
+        "label": "91-180 天",
+        "min_days": 91,
+        "max_days": 180,
+        "invoice_count": 1,
+        "outstanding_cents": 210000000,
+        "share": 0.2718
+      },
+      {
+        "key": "180+",
+        "label": "180+ 天",
+        "min_days": 181,
+        "max_days": null,
+        "invoice_count": 2,
+        "outstanding_cents": 132000000,
+        "share": 0.1709
+      }
+    ],
+    "customers": [
+      {
+        "customer": "北方重工设备有限公司",
+        "invoice_count": 2,
+        "outstanding_cents": 330000000,
+        "overdue_cents": 330000000,
+        "not_due_cents": 0,
+        "overdue_ratio": 1,
+        "max_days_past_due": 177,
+        "buckets": {
+          "0-30": 0,
+          "31-60": 0,
+          "61-90": 0,
+          "91-180": 210000000,
+          "180+": 120000000
+        }
+      },
+      {
+        "customer": "华东精密制造有限公司",
+        "invoice_count": 2,
+        "outstanding_cents": 204000000,
+        "overdue_cents": 96000000,
+        "not_due_cents": 108000000,
+        "overdue_ratio": 0.4706,
+        "max_days_past_due": 22,
+        "buckets": {
+          "0-30": 108000000,
+          "31-60": 96000000,
+          "61-90": 0,
+          "91-180": 0,
+          "180+": 0
+        }
+      },
+      {
+        "customer": "深圳蓝海电子有限公司",
+        "invoice_count": 2,
+        "outstanding_cents": 110500000,
+        "overdue_cents": 32500000,
+        "not_due_cents": 78000000,
+        "overdue_ratio": 0.2941,
+        "max_days_past_due": 36,
+        "buckets": {
+          "0-30": 78000000,
+          "31-60": 0,
+          "61-90": 32500000,
+          "91-180": 0,
+          "180+": 0
+        }
+      },
+      {
+        "customer": "江南纺织, 苏州",
+        "invoice_count": 1,
+        "outstanding_cents": 66000000,
+        "overdue_cents": 66000000,
+        "not_due_cents": 0,
+        "overdue_ratio": 1,
+        "max_days_past_due": 1,
+        "buckets": {
+          "0-30": 0,
+          "31-60": 66000000,
+          "61-90": 0,
+          "91-180": 0,
+          "180+": 0
+        }
+      },
+      {
+        "customer": "西部能源贸易有限公司",
+        "invoice_count": 2,
+        "outstanding_cents": 44000000,
+        "overdue_cents": 12000000,
+        "not_due_cents": 32000000,
+        "overdue_ratio": 0.2727,
+        "max_days_past_due": 242,
+        "buckets": {
+          "0-30": 32000000,
+          "31-60": 0,
+          "61-90": 0,
+          "91-180": 0,
+          "180+": 12000000
+        }
+      },
+      {
+        "customer": "环宇物流服务有限公司",
+        "invoice_count": 2,
+        "outstanding_cents": 18000000,
+        "overdue_cents": 13000000,
+        "not_due_cents": 5000000,
+        "overdue_ratio": 0.7222,
+        "max_days_past_due": 60,
+        "buckets": {
+          "0-30": 5000000,
+          "31-60": 0,
+          "61-90": 13000000,
+          "91-180": 0,
+          "180+": 0
+        }
+      }
+    ],
+    "top_overdue": [
+      {
+        "customer": "北方重工设备有限公司",
+        "overdue_cents": 330000000,
+        "overdue_invoices": 2,
+        "max_days_past_due": 177
+      },
+      {
+        "customer": "华东精密制造有限公司",
+        "overdue_cents": 96000000,
+        "overdue_invoices": 1,
+        "max_days_past_due": 22
+      },
+      {
+        "customer": "江南纺织, 苏州",
+        "overdue_cents": 66000000,
+        "overdue_invoices": 1,
+        "max_days_past_due": 1
+      },
+      {
+        "customer": "深圳蓝海电子有限公司",
+        "overdue_cents": 32500000,
+        "overdue_invoices": 1,
+        "max_days_past_due": 36
+      },
+      {
+        "customer": "环宇物流服务有限公司",
+        "overdue_cents": 13000000,
+        "overdue_invoices": 1,
+        "max_days_past_due": 60
+      }
+    ]
+  },
+  "exports": {
+    "summary": {
+      "path": "exports/ar-aging-summary.csv",
+      "sha256": "4d7f4a64fd6849b1854c6088b5cf7a99dcab73d17dcf7f527a321a763253865c",
+      "bytes": 718,
+      "rows": 7,
+      "text": "customer,0-30,31-60,61-90,91-180,180+,total_outstanding,overdue,overdue_ratio\n北方重工设备有限公司,0.00,0.00,0.00,2100000.00,1200000.00,3300000.00,3300000.00,1.0000\n华东精密制造有限公司,1080000.00,960000.00,0.00,0.00,0.00,2040000.00,960000.00,0.4706\n深圳蓝海电子有限公司,780000.00,0.00,325000.00,0.00,0.00,1105000.00,325000.00,0.2941\n\"江南纺织, 苏州\",0.00,660000.00,0.00,0.00,0.00,660000.00,660000.00,1.0000\n西部能源贸易有限公司,320000.00,0.00,0.00,0.00,120000.00,440000.00,120000.00,0.2727\n环宇物流服务有限公司,50000.00,0.00,130000.00,0.00,0.00,180000.00,130000.00,0.7222\nTOTAL,2230000.00,1620000.00,455000.00,2100000.00,1320000.00,7725000.00,5495000.00,0.7113\n"
+    },
+    "detail": {
+      "path": "exports/ar-aging-detail.csv",
+      "sha256": "59bac75ad3df87e70bd8e46563ac86c852357c03a5b4505eb6efe27264670f0d",
+      "bytes": 1404,
+      "rows": 11,
+      "text": "customer,invoice_no,invoice_date,due_date,age_days,days_past_due,bucket,currency,amount,paid,outstanding,status\n北方重工设备有限公司,INV-2026-0022,2025-12-05,2026-01-04,207,177,180+,CNY,1500000.00,300000.00,1200000.00,overdue\n北方重工设备有限公司,INV-2026-0021,2026-02-10,2026-03-12,140,110,91-180,CNY,2100000.00,0.00,2100000.00,overdue\n华东精密制造有限公司,INV-2026-0002,2026-05-08,2026-06-08,53,22,31-60,CNY,960000.00,0.00,960000.00,overdue\n华东精密制造有限公司,INV-2026-0001,2026-06-02,2026-07-02,28,-2,0-30,CNY,1280000.00,200000.00,1080000.00,not_due\n\"江南纺织, 苏州\",INV-2026-0032,2026-05-30,2026-06-29,31,1,31-60,CNY,660000.00,0.00,660000.00,overdue\n深圳蓝海电子有限公司,INV-2026-0012,2026-04-25,2026-05-25,66,36,61-90,CNY,425000.00,100000.00,325000.00,overdue\n深圳蓝海电子有限公司,INV-2026-0011,2026-06-20,2026-07-20,10,-20,0-30,CNY,780000.00,0.00,780000.00,not_due\n环宇物流服务有限公司,INV-2026-0051,2026-04-01,2026-05-01,90,60,61-90,CNY,180000.00,50000.00,130000.00,overdue\n环宇物流服务有限公司,INV-2026-0052,2026-06-30,2026-07-30,0,-30,0-30,CNY,50000.00,0.00,50000.00,not_due\n西部能源贸易有限公司,INV-2025-0099,2025-10-01,2025-10-31,272,242,180+,CNY,120000.00,0.00,120000.00,overdue\n西部能源贸易有限公司,INV-2026-0041,2026-06-28,2026-07-28,2,-28,0-30,CNY,320000.00,0.00,320000.00,not_due\n"
+    }
+  }
+}

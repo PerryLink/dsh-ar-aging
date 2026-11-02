@@ -1,0 +1,15 @@
+[
+  {
+    "path": "docs/assets/quickstart.png",
+    "kind": "quickstart",
+    "alt": "dsh-ar-aging quickstart terminal output",
+    "caption": "Real command: node samples/quickstart/run.mjs --check — a synthetic 13-row AR ledger yields five age buckets, 71.1% overdue, a top-5 overdue list, and matching summary/detail CSV hashes. Rendered from the captured terminal output with the CJK font msyh.ttc.",
+    "command": "node samples/quickstart/run.mjs --check",
+    "run_at": "2026-11-02T15:07:27Z",
+    "output_sha256": "8d3005c3883030013fdfba508b0b5c4987f9a91aeffc763966ced9784b6018cf",
+    "output_path": "samples/quickstart/expected/result.json",
+    "log": "docs/assets/quickstart.log",
+    "log_sha256": "6d11b7607472e5f0b88179dc5f686bd80d5625c7e881b7bffe7d5d97f99379f6",
+    "image_sha256": "776aebecb966fd4a424298c80dafc3fe4e52b06edfa6164522f588f265008839"
+  }
+]

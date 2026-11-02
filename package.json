@@ -1,0 +1,103 @@
+{
+  "name": "dsh-ar-aging",
+  "version": "0.1.0-alpha.1",
+  "description": "AR ledger ingest, age-bucket report, customer summary, overdue ratio and top overdue customers; local CSV only.",
+  "type": "module",
+  "main": "./lib/plugin/index.js",
+  "types": "./lib/plugin/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/plugin/index.d.ts",
+      "default": "./lib/plugin/index.js"
+    }
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "NOTICE",
+    "THIRD-PARTY-NOTICES",
+    "README-zh.md",
+    "README-es.md",
+    "README-pt.md",
+    "README-hi.md",
+    "docs/assets",
+    "CHANGELOG.md",
+    "icon.svg",
+    "samples",
+    "TROUBLESHOOTING.md",
+    "screenshots.json"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "demo": {
+      "sample": "samples/quickstart/input/ar-ledger.csv",
+      "prompt": "我有这份应收明细，按 2026-06-30 出账龄表：分桶、客户汇总和 Top 逾期客户，再导出 CSV。",
+      "expect": "samples/quickstart/expected/result.json",
+      "screenshot": "docs/assets/quickstart.png",
+      "reads": [
+        "用户指定的应收明细 CSV（样例：samples/quickstart/input/ar-ledger.csv）"
+      ],
+      "writes": [
+        "$DSH_HOME/dsh-ar-aging/exports/"
+      ],
+      "network": false,
+      "external": []
+    }
+  },
+  "engines": {
+    "dsh": ">=0.2.1-rc.3 <0.4.0",
+    "node": ">=24.9.0 <25"
+  },
+  "packageManager": "pnpm@11.28.5",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "node scripts/lint.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "pnpm build && node --test test/*.test.mjs",
+    "gate": "node scripts/gate.mjs",
+    "quickstart": "node samples/quickstart/run.mjs --check",
+    "prepublishOnly": "npm run build && node scripts/lint.mjs && node scripts/gate.mjs"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "accounts-receivable",
+    "ar-aging",
+    "aging-report",
+    "finance",
+    "csv",
+    "perrylink"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PerryLink/dsh-ar-aging.git"
+  },
+  "homepage": "https://perrylink.github.io/dsh-plugins/",
+  "bugs": {
+    "url": "https://github.com/PerryLink/dsh-ar-aging/issues"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": ">=4.0.5 <5.0.0",
+    "@deepseek-ai/dsh-tools": ">=0.2.1-rc.3 <0.4.0"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.0.5",
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.3",
+    "@types/node": "^24.0.0",
+    "typescript": "7.0.2"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-tools": {
+      "optional": true
+    }
+  }
+}

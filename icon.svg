@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="AR aging">
+  <rect width="128" height="128" rx="28" fill="#0b1020"/>
+  <rect x="10" y="10" width="108" height="108" rx="22" fill="#141b30" stroke="#5eead4" stroke-width="3"/>
+  <rect x="28" y="28" width="72" height="72" rx="8" fill="#f4f7ff" opacity="0.96"/>
+  <rect x="38" y="72" width="12" height="18" fill="#14b8a6"/>
+  <rect x="56" y="60" width="12" height="30" fill="#0ea5e9"/>
+  <rect x="74" y="46" width="12" height="44" fill="#f59e0b"/>
+  <path d="M36 40h56" stroke="#0b1020" stroke-width="4" stroke-linecap="round"/>
+</svg>
