@@ -1,12 +1,12 @@
 req_id,metric,threshold,actual,script,evidence_sha256,pass,source,counted
-AR-A01,ingest totals,rows=13 customers=6 outstanding=772500000,rows=13 customers=6 outstanding=772500000,scripts/acceptance.mjs,f3d3d4dbb0ef4785018963ce2a4aa72e71f7e64fa8ad3e08455e679023382d69,true,public/synthetic,false
-AR-A02,aging buckets,counts=4/2/2/1/2 sum=772500000,counts=4/2/2/1/2 sum=772500000,scripts/acceptance.mjs,f3d3d4dbb0ef4785018963ce2a4aa72e71f7e64fa8ad3e08455e679023382d69,true,public/synthetic,false
-AR-A03,overdue ratio,overdue=549500000 ratio=0.7113,overdue=549500000 ratio=0.7113,scripts/acceptance.mjs,f3d3d4dbb0ef4785018963ce2a4aa72e71f7e64fa8ad3e08455e679023382d69,true,public/synthetic,false
-AR-A04,top overdue,count=5 first=330000000,count=5 first=330000000,scripts/acceptance.mjs,f3d3d4dbb0ef4785018963ce2a4aa72e71f7e64fa8ad3e08455e679023382d69,true,public/synthetic,false
-AR-A05,summary CSV,rows=7 sha and quote ok,rows=7 sha=ok quote=ok,scripts/acceptance.mjs,f3d3d4dbb0ef4785018963ce2a4aa72e71f7e64fa8ad3e08455e679023382d69,true,public/synthetic,false
-AR-A06,detail CSV,rows=11 lines=12,rows=11 lines=12,scripts/acceptance.mjs,f3d3d4dbb0ef4785018963ce2a4aa72e71f7e64fa8ad3e08455e679023382d69,true,public/synthetic,false
-AR-A07,bad CSV row,E_AR_CSV_ROW,E_AR_CSV_ROW,scripts/acceptance.mjs,f3d3d4dbb0ef4785018963ce2a4aa72e71f7e64fa8ad3e08455e679023382d69,true,public/synthetic,false
-AR-A08,invalid date,E_AR_DATE_INVALID,E_AR_DATE_INVALID,scripts/acceptance.mjs,f3d3d4dbb0ef4785018963ce2a4aa72e71f7e64fa8ad3e08455e679023382d69,true,public/synthetic,false
-AR-A09,invalid amount,E_AR_AMOUNT,E_AR_AMOUNT,scripts/acceptance.mjs,f3d3d4dbb0ef4785018963ce2a4aa72e71f7e64fa8ad3e08455e679023382d69,true,public/synthetic,false
-AR-A10,export path safety,traversal rejected,E_AR_PATH_INVALID,scripts/acceptance.mjs,f3d3d4dbb0ef4785018963ce2a4aa72e71f7e64fa8ad3e08455e679023382d69,true,public/synthetic,false
+AR-A01,ingest totals,rows=13 customers=6 outstanding=772500000,rows=13 customers=6 outstanding=772500000,scripts/acceptance.mjs,c209ba3bd1703581b95068860cabe62a60611a8179b2a15ee53183ecf375f686,true,public/synthetic,false
+AR-A02,aging buckets,counts=4/2/2/1/2 sum=772500000,counts=4/2/2/1/2 sum=772500000,scripts/acceptance.mjs,c209ba3bd1703581b95068860cabe62a60611a8179b2a15ee53183ecf375f686,true,public/synthetic,false
+AR-A03,overdue ratio,overdue=549500000 ratio=0.7113,overdue=549500000 ratio=0.7113,scripts/acceptance.mjs,c209ba3bd1703581b95068860cabe62a60611a8179b2a15ee53183ecf375f686,true,public/synthetic,false
+AR-A04,top overdue,count=5 first=330000000,count=5 first=330000000,scripts/acceptance.mjs,c209ba3bd1703581b95068860cabe62a60611a8179b2a15ee53183ecf375f686,true,public/synthetic,false
+AR-A05,summary CSV,rows=7 sha and quote ok,rows=7 sha=ok quote=ok,scripts/acceptance.mjs,c209ba3bd1703581b95068860cabe62a60611a8179b2a15ee53183ecf375f686,true,public/synthetic,false
+AR-A06,detail CSV,rows=11 lines=12,rows=11 lines=12,scripts/acceptance.mjs,c209ba3bd1703581b95068860cabe62a60611a8179b2a15ee53183ecf375f686,true,public/synthetic,false
+AR-A07,bad CSV row,E_AR_CSV_ROW,E_AR_CSV_ROW,scripts/acceptance.mjs,c209ba3bd1703581b95068860cabe62a60611a8179b2a15ee53183ecf375f686,true,public/synthetic,false
+AR-A08,invalid date,E_AR_DATE_INVALID,E_AR_DATE_INVALID,scripts/acceptance.mjs,c209ba3bd1703581b95068860cabe62a60611a8179b2a15ee53183ecf375f686,true,public/synthetic,false
+AR-A09,invalid amount,E_AR_AMOUNT,E_AR_AMOUNT,scripts/acceptance.mjs,c209ba3bd1703581b95068860cabe62a60611a8179b2a15ee53183ecf375f686,true,public/synthetic,false
+AR-A10,export path safety,traversal rejected,E_AR_PATH_INVALID,scripts/acceptance.mjs,c209ba3bd1703581b95068860cabe62a60611a8179b2a15ee53183ecf375f686,true,public/synthetic,false
 PS1-QS01,quickstart golden,1/1,1,samples/quickstart/run.mjs,8d3005c3883030013fdfba508b0b5c4987f9a91aeffc763966ced9784b6018cf,true,synthetic/quickstart,true

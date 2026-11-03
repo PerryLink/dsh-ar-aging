@@ -11,7 +11,7 @@ const check = (ok, message) => {
 }
 
 check(pkg.name === 'dsh-ar-aging', `package name must be dsh-ar-aging, got ${pkg.name}`)
-check(/^0\.1\.0-alpha\.\d+$/.test(pkg.version), `unexpected version ${pkg.version}`)
+check(/^\d+\.\d+\.\d+(?:-alpha\.\d+)?$/.test(pkg.version), `unexpected version ${pkg.version}`)
 check(pkg.dsh?.bundle?.patch === './cordis.patch.yml', 'dsh.bundle.patch missing')
 check(!pkg.dsh?.client, 'this package must not declare a client bundle')
 check(existsSync('cordis.patch.yml'), 'cordis.patch.yml is missing')

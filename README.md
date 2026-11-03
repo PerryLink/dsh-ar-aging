@@ -97,7 +97,7 @@ No. It reads the named CSV, writes only under `$DSH_HOME/dsh-ar-aging/exports/`,
 
 ## Version
 
-`0.1.0-alpha.1` · 53 tests pass (`node --test test/*.test.mjs`).
+`0.1.0` · 53 tests pass (`node --test test/*.test.mjs`).
 
 > ⭐ If this helps, a star makes it easier for the next person to find it. Nothing is gated behind it.
 
