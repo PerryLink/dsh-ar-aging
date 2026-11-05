@@ -1,18 +1,28 @@
 <div align="center">
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-flow-dark.svg">
+  <img src="docs/assets/dsh-ar-aging-flow-light.svg" width="100%" alt="dsh-ar-aging 流水线：ar-ledger.csv → ar.ingest 校验规范化（R0）→ ar.aging 分桶与逾期占比（R0）→ ar.export 导出 CSV（R1）→ $DSH_HOME/dsh-ar-aging/exports/；全程本地，源文件只读">
+</picture>
+
 # dsh-ar-aging
 
-> **Official repository.** The only official repository of this package, maintained by PerryLink. Same-name repositories under other accounts are not affiliated. Apache-2.0.
+**把应收明细 CSV 变成账龄表：分桶、客户汇总、逾期占比、Top 逾期客户，再导出 CSV。**
 
-[![npm](https://img.shields.io/npm/v/dsh-ar-aging)](https://www.npmjs.com/package/dsh-ar-aging)
-[![CI](https://github.com/PerryLink/dsh-ar-aging/actions/workflows/ci.yml/badge.svg)](https://github.com/PerryLink/dsh-ar-aging/actions)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+面向 DeepSeek Harness 的纯本地应收账龄工具：三个工具读一份本地 CSV，按开票日算账龄、按到期日算逾期，全部计算在本机完成——不联网、不调用模型、不上传。
 
-**Turn an AR ledger CSV into an aging report: buckets, customer summary, overdue ratio and top overdue customers, then export CSV.**
+[安装](#三步上手) · [配置](#配置) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
-> **Status: alpha / public-synthetic / partial / not counted / not GA.** No customer data, customer evidence, or production-readiness claim.
+[![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
+[![DSH](https://img.shields.io/badge/DSH-%E2%89%A50.2.1%20%3C0.4.0-4B67B4?style=flat-square&labelColor=2B3245)](#兼容性)
+[![npm](https://img.shields.io/npm/v/dsh-ar-aging?style=flat-square&labelColor=2B3245&color=CB3837)](https://www.npmjs.com/package/dsh-ar-aging)
+[![CI](https://img.shields.io/github/actions/workflow/status/PerryLink/dsh-ar-aging/ci.yml?branch=main&label=CI&style=flat-square&labelColor=2B3245)](https://github.com/PerryLink/dsh-ar-aging/actions/workflows/ci.yml)
+[![Node](https://img.shields.io/badge/node-%3E%3D24.9-339933?style=flat-square&labelColor=2B3245)](#兼容性)
 
-[English](README.md) · [简体中文](README-zh.md)
+[![Stars](https://img.shields.io/github/stars/PerryLink/dsh-ar-aging?style=flat-square&labelColor=2B3245)](https://github.com/PerryLink/dsh-ar-aging/stargazers)
+[![npm downloads](https://img.shields.io/npm/dm/dsh-ar-aging?style=flat-square&labelColor=2B3245&color=CB3837)](https://www.npmjs.com/package/dsh-ar-aging)
+[![dshfind](https://dshfind.com/api/badge/PerryLink/dsh-ar-aging?metric=downloads)](https://dshfind.com/plugins/PerryLink/dsh-ar-aging?ref=badge)
+[![Gitee](https://img.shields.io/badge/Gitee-mirror-C71D23?style=flat-square&labelColor=2B3245&logo=gitee)](https://gitee.com/perrylink/dsh-ar-aging)
 
 ```sh
 dsh plugin --profile <profile> add dsh-ar-aging
@@ -20,158 +30,197 @@ dsh plugin --profile <profile> add dsh-ar-aging
 
 </div>
 
-## One-liner
+<sub>社区插件，与 DeepSeek 官方无关。唯一仓库：<https://github.com/PerryLink/dsh-ar-aging>（Gitee 为镜像）。</sub>
 
-Read a local AR ledger CSV, age open invoices from their invoice date, measure overdue from their due date, and write a bucket table plus a customer summary.
+<sub>状态：alpha / 公开合成 / partial / not counted / 非 GA——不含客户数据、客户证据，也不作生产可用或审计结论声明。</sub>
 
-## Fit / not a fit
+## 它是什么
 
-- **Fits:** 10s to 1000s of rows exported from an ERP or accounting system; a 0-30 / 31-60 / 61-90 / 91-180 / 180+ aging table; an overdue ratio and a top-overdue list for a collections review; a CSV to hand to finance or archive.
-- **Does not fit:** converting multiple currencies into one (no FX here); write-offs, bad-debt provisioning, impairment or collection advice; PDF, scans or Excel as direct input (export CSV first); replacing an auditor, tax adviser or credit decision; credit notes / negative invoices.
+一句话：读一份本地应收明细 CSV，按开票日算账龄（`as_of - invoice_date`）、按到期日算逾期（`due_date < as_of`），输出固定五桶的账龄表、客户汇总、逾期占比和 Top 逾期客户，并把结果导出成 CSV。
 
-## Input
+- **适合**：几十到几千行、由 ERP / 财务系统导出的应收明细；需要按 0-30 / 31-60 / 61-90 / 91-180 / 180+ 出账龄表、看逾期占比和 Top 逾期客户；需要把结果落成 CSV 交给财务复核或归档。
+- **不适合**：多币种需要折算成一种货币（本包不做汇率）；需要核销、坏账准备、减值或催收建议；PDF / 扫描件 / Excel 直接输入（请先导出成 CSV）；替代审计师或税务师判断；带负数金额的贷记单 / 红字发票。
 
-- UTF-8 CSV with a header row and comma separators. Quoted commas, embedded newlines and doubled quotes (RFC 4180) are supported, as are CRLF and a UTF-8 BOM.
-- Header: `customer,invoice_no,invoice_date,due_date,amount_cents,currency,paid_cents`. Chinese aliases such as `客户 / 发票号 / 开票日 / 到期日 / 金额分 / 币种 / 已收金额分` work too; extra columns are ignored.
-- Dates: `YYYY-MM-DD`; `due_date` must not be earlier than `invoice_date`.
-- Amounts: integer **cents**; `amount_cents > 0` and `0 <= paid_cents <= amount_cents`.
-- Currency: a 3-letter code such as `CNY`. **One CSV must use one currency**; mixing raises `E_AR_CSV_ROW`.
-- Invoice numbers must be unique within the file.
-- Size: up to 20 MB per file; split by customer or month beyond that.
-- Source: the local CSV the user names; it is read-only and never modified.
+## 三步上手
 
-## Output
+1. **安装**（三选一）：
 
-- `ar.ingest`: `{ source_sha256, rows, customers, currency, invoice_date_min, invoice_date_max, due_date_min, due_date_max, total_cents, paid_cents, outstanding_cents, settled_rows, open_rows, preview }`. `preview` holds the first five normalized rows.
-- `ar.aging`: `{ as_of, currency, totals, buckets, customers, top_overdue }`. `totals` carries outstanding, overdue, not-due and `overdue_ratio`; `buckets` is always the five buckets; `customers` is sorted by outstanding; `top_overdue` defaults to five customers (`top_n` accepts 1–50).
-- `ar.export`: writes the aging table under `$DSH_HOME/dsh-ar-aging/exports/` and returns path, `sha256`, bytes and rows. `layout=summary` (default) is customer × bucket plus a `TOTAL` row; `layout=detail` is one row per open invoice. The source CSV is untouched.
+   ```sh
+   # npm 通道（推荐，已发布版本）
+   dsh plugin --profile <profile> add dsh-ar-aging
+   # git 通道（最新 main；等价于 git+https://github.com/PerryLink/dsh-ar-aging.git）
+   dsh plugin --profile <profile> add github:PerryLink/dsh-ar-aging
+   # tarball 通道：本仓库 pnpm pack 后
+   dsh plugin --profile <profile> add ./dsh-ar-aging-<version>.tgz
+   ```
 
-Aging rules: age = `as_of - invoice_date` in UTC days. `0-30` covers days 0–30, `31-60` days 31–60, `61-90` days 61–90, `91-180` days 91–180, and `180+` starts at day 181. Overdue means `due_date < as_of`; an invoice due on `as_of` is not overdue. A fully paid invoice (`paid_cents = amount_cents`) counts as settled but is excluded from buckets and detail exports.
+2. **最小配置**（无需任何 Config 键，`cordis.patch.yml` 只插入这一行）：
 
-## Example
+   ```yaml
+   - insert:
+       - id: dsh-ar-aging
+         name: dsh-ar-aging
+   ```
 
-Paste this one line into the agent:
+3. **验证已生效**：
 
-> 我有这份应收明细，按 2026-06-30 出账龄表：分桶、客户汇总和 Top 逾期客户，再导出 CSV。
+   ```sh
+   dsh --profile <profile> --dump-config | grep dsh-ar-aging
+   node samples/quickstart/run.mjs --check
+   ```
 
-Reproduce the bundled sample and compare with the golden file:
+**卸载**：`dsh plugin --profile <profile> remove dsh-ar-aging`（或从 profile patch 删掉该行）。
+
+## 核心能力
+
+工具名是稳定 API；工具说明保留英文以匹配运行时输出。
+
+| 工具 | 用途 | 风险 |
+|---|---|---|
+| `ar.ingest` | 校验并规范化应收明细 CSV，返回总数、已结清/未收行数和 5 行预览 | R0 |
+| `ar.aging` | 按 `as_of` 出 5 个账龄桶、客户汇总、逾期占比和 Top 逾期客户 | R0 |
+| `ar.export` | 导出客户账龄表（summary）或逐票明细（detail）CSV，返回路径与 sha256 | R1 本地写 |
+
+- **固定五桶账龄** —— `0-30` / `31-60` / `61-90` / `91-180` / `180+`，账龄从开票日起算，逾期从到期日起算，两个口径互不混淆。
+- **客户汇总与 Top 逾期** —— 客户按未收金额降序，Top 逾期按逾期金额再按最长逾期天数排序，`top_n` 可调（1–50，默认 5）。
+- **两种导出布局** —— `layout=summary` 是客户 × 分桶加 `TOTAL` 行，`layout=detail` 是每个未收发票一行；导出文件带 `sha256` 校验值。
+- **纯本地、零运行时依赖** —— 不联网、不调用模型、不上传；源 CSV 只读，永不修改。
+- **报错带下一步动作** —— 每个错误都是 `<一句人话>（E_AR_XXX）｜下一步：<一个动作>`，见「错误码」。
+
+## 输入
+
+- 格式：UTF-8 CSV，首行表头，逗号分隔；支持带引号的逗号、换行和双引号（RFC 4180），支持 CRLF 和 BOM。
+- 表头：`customer,invoice_no,invoice_date,due_date,amount_cents,currency,paid_cents`。也接受 `客户 / 发票号 / 开票日 / 到期日 / 金额分 / 币种 / 已收金额分` 等中文别名；多出的列会被忽略。
+- 日期：`YYYY-MM-DD`；`due_date` 不能早于 `invoice_date`。
+- 金额：整数**分**；`amount_cents > 0`，`0 <= paid_cents <= amount_cents`。
+- 币种：3 位字母代码（如 `CNY`）；**一份 CSV 只能有一种币种**，混用会报 `E_AR_CSV_ROW`。
+- 发票号：同一文件内不能重复。
+- 大小：单个文件 ≤ 20 MB；超过请按客户或月份拆文件。
+- 来源：用户自己指定的本地 CSV；原文件只读，不会被修改。
+
+## 输出
+
+- `ar.ingest`：`{ source_sha256, rows, customers, currency, invoice_date_min, invoice_date_max, due_date_min, due_date_max, total_cents, paid_cents, outstanding_cents, settled_rows, open_rows, preview }`。`preview` 是前 5 行规范化结果。
+- `ar.aging`：`{ as_of, currency, totals, buckets, customers, top_overdue }`。`totals` 含未收、逾期、未到期和 `overdue_ratio`；`buckets` 固定 5 桶；`customers` 按未收降序；`top_overdue` 默认 5 个客户（`top_n` 可调，1–50）。
+- `ar.export`：把账龄表写到 `$DSH_HOME/dsh-ar-aging/exports/`，返回路径、`sha256`、字节数、行数。`layout=summary`（默认）是客户 × 分桶 + `TOTAL` 行；`layout=detail` 是每个未收发票一行。原 CSV 不改。
+
+### 账龄规则
+
+1. 账龄天数 = `as_of - invoice_date`，按 UTC 日历日取整；`as_of` 早于任一开票日 → `E_AR_DATE_INVALID`。
+2. 分桶：`0-30`（0–30 天）、`31-60`（31–60）、`61-90`（61–90）、`91-180`（91–180）、`180+`（181 天及以上）。
+3. 逾期：`due_date < as_of` 且未收 > 0；到期日当天算未到期。
+4. 逾期占比 = 逾期未收 ÷ 未收总额，保留 4 位小数（0.7113 = 71.13%）。
+5. 客户汇总按未收金额降序，金额相同按客户名升序；Top 逾期按逾期金额降序，再按最长逾期天数降序。
+6. 导出的 summary 最后一行为 `TOTAL`；detail 只含未收发票，按客户、到期日、发票号排序。
+
+已结清的发票（`paid_cents = amount_cents`）计入 `settled_rows`，但不进入分桶和明细导出。
+
+## 示例
+
+直接复制下面这句发给 agent：
+
+```text
+我有这份应收明细，按 2026-06-30 出账龄表：分桶、客户汇总和 Top 逾期客户，再导出 CSV。
+```
+
+用自带样例复跑并核对金标：
 
 ```sh
 node samples/quickstart/run.mjs --check
 ```
 
-![dsh-ar-aging quickstart terminal output](docs/assets/quickstart.png)
+![dsh-ar-aging quickstart 真实运行输出](docs/assets/quickstart.png)
 
-The sample is a 13-row synthetic ledger with 6 customers in one currency (CNY). It covers all five buckets, one partial payment, two settled invoices and a customer name with a comma (`江南纺织, 苏州`, which exercises CSV quoting). `samples/quickstart/expected/result.json` is the real stdout of `node samples/quickstart/run.mjs --json`, not hand-written.
+样例是 13 行合成应收明细、6 个客户、单一币种 CNY，覆盖全部 5 个分桶、1 张部分收款、2 张已结清，以及一个带逗号的客户名（`江南纺织, 苏州`，用于验证 CSV 引号转义）。金标 `samples/quickstart/expected/result.json` 由 `node samples/quickstart/run.mjs --json` 真实产生，不是手写。截图就是上面这条命令的真实输出（原始日志见 [`docs/assets/quickstart.log`](docs/assets/quickstart.log)）。
 
-## Permissions
+## 配置
 
-Read: the AR ledger CSV the user names (sample: `samples/quickstart/input/ar-ledger.csv`); nothing else.
-Write: `$DSH_HOME/dsh-ar-aging/exports/` only; the source CSV is not modified.
-Network: no.
-External systems: none.
+本插件**没有 Config 键**——挂载后即全部可用，所有可调项都在三个工具的调用参数上：
 
-`ar.ingest` and `ar.aging` are **R0** (read-only). `ar.export` is **R1** (local write under `$DSH_HOME/dsh-ar-aging/exports/`). `DSH_AR_AGING_HOME` can override the local write root for tests; the default is exactly `$DSH_HOME/dsh-ar-aging`.
+| 工具 | 参数 | 必填 | 含义 |
+|---|---|---|---|
+| `ar.ingest` | `path` | 是 | 应收明细 CSV 的绝对路径 |
+| `ar.aging` | `path`、`as_of` | 是 | `as_of` 为账龄基准日（`YYYY-MM-DD`），显式传入可复现「今天」 |
+| `ar.aging` | `top_n` | 否 | Top 逾期客户数量，1–50，默认 5 |
+| `ar.export` | `path`、`as_of` | 是 | 同上 |
+| `ar.export` | `layout` | 否 | `summary`（默认）或 `detail` |
+| `ar.export` | `filename` | 否 | 导出文件名，只允许 `[A-Za-z0-9._-]`；默认 `ar-aging-<as_of>-<layout>.csv` |
+
+调用示例（工具面）：
+
+```sh
+# 1) 校验并看总数
+#    工具面：ar.ingest({ path: "/abs/path/ar-ledger.csv" })
+
+# 2) 出账龄表
+#    工具面：ar.aging({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", top_n: 5 })
+
+# 3) 导出 CSV
+#    工具面：ar.export({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", layout: "summary" })
+```
+
+测试可用环境变量 `DSH_AR_AGING_HOME` 覆盖本地写根目录；默认严格等于 `$DSH_HOME/dsh-ar-aging`。
 
 ## FAQ
 
-### 1. Is aging measured from the invoice date or the due date?
+<details>
+<summary>账龄按开票日还是到期日算？</summary>
 
-From the **invoice date** (`as_of - invoice_date`). Overdue is measured separately from the **due date** (`due_date < as_of`). An invoice aged 100 days but not yet due lands in `91-180` with zero overdue amount.
+按**开票日**算账龄（`as_of - invoice_date`），按**到期日**算逾期（`due_date < as_of`）。两者分开，所以一张 100 天账龄但还没到期的发票会落在 `91-180` 桶，同时逾期金额为 0。
 
-### 2. What about multiple currencies?
+</details>
 
-One CSV must use one currency; mixing raises `E_AR_CSV_ROW`. There is no FX conversion and no cross-currency total here. Split the file by currency, or convert in the source system first.
+<details>
+<summary>多币种怎么办？</summary>
 
-### 3. How are partial payments and settled invoices handled?
+一份 CSV 只允许一种币种，混用会直接报 `E_AR_CSV_ROW`。本包不做汇率折算，也不把不同币种加在一起；请按币种拆成多个 CSV 分别运行，或先在源系统折算好再导出。
 
-Outstanding = `amount_cents - paid_cents`. Partially paid invoices enter aging at their outstanding balance. A fully paid invoice counts in `settled_rows` but is excluded from buckets, the customer summary and detail exports. `paid_cents > amount_cents` raises `E_AR_AMOUNT`.
+</details>
 
-### 4. Are amounts in yuan or cents?
+<details>
+<summary>部分收款和已结清怎么处理？</summary>
 
-The tool API uses integer **cents** everywhere. `128000000` means 1,280,000.00. Exported CSV renders two decimals so a spreadsheet can open it directly.
+未收 = `amount_cents - paid_cents`。部分收款按未收余额进入账龄；`paid_cents = amount_cents` 的发票只计入 `settled_rows`，不进入分桶、客户汇总和明细导出。`paid_cents > amount_cents` 会报 `E_AR_AMOUNT`。
 
-### 5. Does it modify or upload my file?
+</details>
 
-No. It reads the named CSV, writes only under `$DSH_HOME/dsh-ar-aging/exports/`, and never uses the network, a model call or an upload.
+<details>
+<summary>金额单位是元还是分？</summary>
 
-## Version
+输入和输出 API 都是**整数分**。`128000000` 表示 1,280,000.00 元。导出的 CSV 会格式化成两位小数，方便直接用表格软件打开。
 
-`0.1.0` · 53 tests pass (`node --test test/*.test.mjs`).
+</details>
 
-> ⭐ If this helps, a star makes it easier for the next person to find it. Nothing is gated behind it.
+<details>
+<summary>会改我的文件或上传数据吗？</summary>
 
-## Install
+不会。只读用户指定的 CSV；只在本地写 `$DSH_HOME/dsh-ar-aging/exports/`；不联网、不调用模型、不上传。
 
-```sh
-dsh plugin --profile <profile> add dsh-ar-aging
-dsh --profile <profile> --dump-config | grep dsh-ar-aging
-```
+</details>
 
-Uninstall:
+## 权限
 
-```sh
-dsh plugin --profile <profile> remove dsh-ar-aging
-```
+读：用户指定的应收明细 CSV（样例 `samples/quickstart/input/ar-ledger.csv`）；不读其他目录。
+写：`$DSH_HOME/dsh-ar-aging/exports/`（CSV 输出）；不改原 CSV。
+联网：否。
+外部系统：无。
 
-### Install channels
+`ar.ingest`、`ar.aging` 标 **R0**（只读）；`ar.export` 标 **R1**（本地写，只写 `$DSH_HOME/dsh-ar-aging/exports/`）。测试可用 `DSH_AR_AGING_HOME` 覆盖本地写根目录，默认严格等于 `$DSH_HOME/dsh-ar-aging`。
 
-- **npm (recommended):** `dsh plugin --profile <profile> add dsh-ar-aging`
-- **git channel:** `dsh plugin --profile <profile> add github:PerryLink/dsh-ar-aging`
-- **tarball:** `pnpm pack`, then `dsh plugin --profile <profile> add ./dsh-ar-aging-<version>.tgz`
+## 错误码
 
-## Tools
-
-Tool names are stable API; descriptions stay in English to match runtime output.
-
-| Tool | Purpose | Risk |
+| 错误码 | 何时出现 | 下一步 |
 |---|---|---|
-| `ar.ingest` | Validate and normalize the AR CSV; return totals, settled/open counts and a 5-row preview | R0 |
-| `ar.aging` | Build the five aging buckets, customer summary, overdue ratio and top overdue customers at `as_of` | R0 |
-| `ar.export` | Write the customer aging table (`summary`) or invoice-level trace (`detail`) as CSV, returning path + sha256 | R1 local write |
+| `E_AR_CSV_ROW` | 列数不对、表头缺失、客户/发票号为空、发票号重复、币种混用、文件为空或超 20 MB | 对照表头修这一行，按币种/月份拆文件 |
+| `E_AR_DATE_INVALID` | 日期不是 `YYYY-MM-DD`、不是真实日期、到期日早于开票日、`as_of` 早于开票日 | 统一日期格式并核对先后顺序 |
+| `E_AR_AMOUNT` | 金额分不是非负整数、金额为 0、已收超过应收 | 金额一律填整数分，且 `0 <= paid <= amount` |
+| `E_AR_PATH_INVALID` | 输入路径不存在/是目录/读不了、导出目录不可写，或导出文件名含路径、空格、中文、超长 | 传存在的 CSV；导出只传 `[A-Za-z0-9._-]` 文件名 |
 
-## Aging rules
+报错原文格式：`<一句人话>（E_AR_XXX）｜下一步：<一个动作>`。更多排查见 [TROUBLESHOOTING.md](TROUBLESHOOTING.md)。
 
-1. Age = `as_of - invoice_date` in whole UTC days. An `as_of` earlier than any invoice date raises `E_AR_DATE_INVALID`.
-2. Buckets: `0-30` (0–30), `31-60` (31–60), `61-90` (61–90), `91-180` (91–180), `180+` (181+).
-3. Overdue: `due_date < as_of` and outstanding > 0; due today is not overdue.
-4. Overdue ratio = overdue outstanding ÷ total outstanding, rounded to 4 decimals (0.7113 = 71.13%).
-5. Customers sort by outstanding descending, then name ascending. Top overdue sorts by overdue amount, then longest overdue days.
-6. The summary CSV ends with a `TOTAL` row; the detail CSV contains open invoices only, sorted by customer, due date and invoice number.
+## 验收证据
 
-## Quick start
-
-```sh
-# 1) validate and see totals
-#    tool surface: ar.ingest({ path: "/abs/path/ar-ledger.csv" })
-
-# 2) build the aging report
-#    tool surface: ar.aging({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", top_n: 5 })
-
-# 3) export CSV
-#    tool surface: ar.export({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", layout: "summary" })
-```
-
-Or run the sample:
-
-```sh
-node samples/quickstart/run.mjs --check
-```
-
-## Errors
-
-| Code | When | Next action |
-|---|---|---|
-| `E_AR_CSV_ROW` | Wrong column count, missing header, empty customer/invoice, duplicate invoice, mixed currency, empty or >20 MB file | Fix the named row, split by currency or month |
-| `E_AR_DATE_INVALID` | Not `YYYY-MM-DD`, impossible date, due before invoice, `as_of` before an invoice | Use ISO dates and check ordering |
-| `E_AR_AMOUNT` | Not a non-negative integer of cents, zero amount, paid above amount | Use integer cents and `0 <= paid <= amount` |
-| `E_AR_PATH_INVALID` | Input missing / a directory / unreadable, unwritable exports directory, or an unsafe export filename | Pass an existing CSV; export with `[A-Za-z0-9._-]` only |
-
-The message format is `<one sentence>（E_AR_XXX）｜下一步：<one action>`. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
-
-## Acceptance evidence
-
-Public/synthetic fixtures live in `samples/quickstart/`; `ACCEPTANCE.csv` records the checks. Every row is `counted=false` except the quickstart row.
+公开/合成 fixture 在 `samples/quickstart/`；`ACCEPTANCE.csv` 记录检查，除 quickstart 行外均为 `counted=false`。
 
 | req_id | metric | threshold | actual | pass | source | counted |
 |---|---|---|---|---|---|---|
@@ -180,20 +229,42 @@ Public/synthetic fixtures live in `samples/quickstart/`; `ACCEPTANCE.csv` record
 | AR-A03 | overdue ratio | overdue=549500000 ratio=0.7113 | overdue=549500000 ratio=0.7113 | true | public/synthetic | false |
 | PS1-QS01 | quickstart golden | 1/1 | 1 | true | synthetic/quickstart | true |
 
-*Fixture-backed rows, not a customer run; no output is invented.*
+*这是 fixture 支撑的验收行，不是客户运行；没有编造输出。*
 
-## Limits and known limitations
+## 边界与已知限制
 
-- **Single currency:** no FX conversion; split files by currency.
-- **No credit notes:** `amount_cents` must be > 0. Offset red invoices in the source system first.
-- Aging and overdue statistics only: no write-off, bad-debt provision, impairment, collection strategy or audit opinion.
-- CSV only: no PDF, scans or Excel, and no OCR. Export CSV from the source system first.
-- Amount precision is one cent; dates use UTC calendar days. Pass `as_of` explicitly for a reproducible "today".
-- Exported CSV uses RFC 4180 quoting only; Excel formula prefixes are not sanitised.
-- Local only: no network, no model call, no upload.
-- Public/synthetic samples only; alpha/partial, not counted, no GA or production-readiness claim.
+- **单币种**：不做汇率折算，不同币种必须拆文件。
+- **不含贷记单**：`amount_cents` 必须大于 0；红字发票/贷项通知单请先在源系统冲抵。
+- 只做账龄与逾期统计：不做核销、坏账准备、减值、催收策略或审计结论。
+- 只读 CSV：不读 PDF / 扫描件 / Excel，不做 OCR；请先从源系统导出 CSV。
+- 金额精度到分；日期按 UTC 日历日；跨时区的「今天」请显式传 `as_of`。
+- 导出 CSV 只做 RFC 4180 引号转义，不做 Excel 公式前缀清洗；不要用 Excel 直接打开来源不明的 CSV。
+- 只在本机读写；不联网、不调用模型、不上传。
+- 仅公开/合成样例；alpha/partial、not counted，不作 GA 或生产可用声明。
 
-## Development
+## 兼容性
+
+| 维度 | 状态 |
+|---|---|
+| Harness | `dsh >=0.2.1-rc.3 <0.4.0` |
+| Node | `>=24.9.0 <25` |
+| 平台 | 全平台；仅本地文件 |
+| 数据 | 不联网、不调用模型、不上传 |
+
+## 生态与质量
+
+- [Gitee 镜像](https://gitee.com/perrylink/dsh-ar-aging)（同步镜像，以 GitHub 为准）
+- [dshfind 插件页](https://dshfind.com/plugins/PerryLink/dsh-ar-aging)（安装量与排名）
+- **1024 商店渠道**：先 `npm i -g dsh1024`，再 `dsh1024 plugin --profile <profile> add dsh-ar-aging`（计入 [deepseek1024.com](https://deepseek1024.com) 安装排行）
+- [生态实测知识库](https://perrylink.github.io/dsh-plugin-guide/)：插件开发指南 · 选型实测数据 · 维护取舍判据
+
+## 相关项目
+
+- [dsh-bankrec](https://github.com/PerryLink/dsh-bankrec)（银行流水对账）
+- [dsh-fin-invoice-core](https://github.com/PerryLink/dsh-fin-invoice-core)（发票核心逻辑）
+- [领域索引](https://perrylink.github.io/dsh-plugins/)
+
+## 开发
 
 ```sh
 pnpm install --frozen-lockfile
@@ -202,21 +273,18 @@ node --test test/*.test.mjs
 node scripts/gate.mjs
 ```
 
-## Compatibility
+当前版本 `0.1.0`，53 项测试通过（`node --test test/*.test.mjs`）。发布门禁：`node scripts/gate.mjs`（元数据 lint + 公开验收行全过 + 四个稳定错误码全被触发）。开头流程图由 [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) 程序化生成（Python 标准库，纯 SVG、命令 token 文案、深浅双版），可重复执行；`docs/assets/quickstart.png` 为真实运行截图，配合 `docs/assets/quickstart.log` 保留。
 
-| Surface | Status |
-|---|---|
-| Harness | `dsh >=0.2.1-rc.3 <0.4.0` |
-| Node | `>=24.9.0 <25` |
-| Platforms | All; local files only |
-| Data | No network, no model call, no upload |
+Topics：`dsh`、`dsh-plugin`、`deepseek-harness`、`accounts-receivable`、`ar-aging`、`aging-report`、`finance`、`csv`、`perrylink`
 
-## Related work
+## 家族与致谢
 
-- [dsh-bankrec](https://github.com/PerryLink/dsh-bankrec) (bank statement reconciliation)
-- [dsh-fin-invoice-core](https://github.com/PerryLink/dsh-fin-invoice-core) (invoice core logic)
-- [Domain index](https://perrylink.github.io/dsh-plugins/)
+本项目是 [PerryLink](https://github.com/PerryLink) 维护的 DeepSeek Harness 插件家族成员（全部 Apache-2.0）。如果这个插件帮到了你，**给个 star**——它不解锁任何功能，但会让下一个人更容易找到它。
+
+- [@PerryLink](https://github.com/PerryLink) —— 创建者与维护者：账龄引擎、CSV 解析与导出、三个工具面、quickstart 金标样例与五语文档。
 
 ## License
 
-Apache-2.0. See `LICENSE`, `NOTICE`, `THIRD-PARTY-NOTICES`.
+[LICENSE](LICENSE)（Apache License 2.0）© 2026 dsh-ar-aging contributors。另见 `NOTICE`、`THIRD-PARTY-NOTICES`。
+
+<p align="center"><sub>Apache-2.0 · 社区插件，与 DeepSeek 无关。</sub></p>
