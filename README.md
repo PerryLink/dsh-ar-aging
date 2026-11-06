@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-flow-dark.svg">
-  <img src="docs/assets/dsh-ar-aging-flow-light.svg" width="100%" alt="dsh-ar-aging 流水线：ar-ledger.csv → ar.ingest 校验规范化（R0）→ ar.aging 分桶与逾期占比（R0）→ ar.export 导出 CSV（R1）→ $DSH_HOME/dsh-ar-aging/exports/；全程本地，源文件只读">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-hero-zh-dark.webp">
+  <img src="docs/assets/dsh-ar-aging-hero-zh-light.webp" width="100%" alt="dsh-ar-aging 横幅：右侧是固定五桶账龄（0-30 28.9%、31-60 21.0%、61-90 5.9%、91-180 27.2%、180+ 17.1%）、逾期占比 71.13% 的环形图与 Top 逾期客户；数据取自 quickstart 样例，as_of 2026-06-30">
 </picture>
 
 # dsh-ar-aging
@@ -40,6 +40,11 @@ dsh plugin --profile <profile> add dsh-ar-aging
 
 - **适合**：几十到几千行、由 ERP / 财务系统导出的应收明细；需要按 0-30 / 31-60 / 61-90 / 91-180 / 180+ 出账龄表、看逾期占比和 Top 逾期客户；需要把结果落成 CSV 交给财务复核或归档。
 - **不适合**：多币种需要折算成一种货币（本包不做汇率）；需要核销、坏账准备、减值或催收建议；PDF / 扫描件 / Excel 直接输入（请先导出成 CSV）；替代审计师或税务师判断；带负数金额的贷记单 / 红字发票。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-ar-aging-flow-v5-light.svg" width="100%" alt="dsh-ar-aging 结构：ar-ledger.csv（7 列）→ ar.ingest 校验（R0）→ 两个时钟并行，invoice_date 算 age_days 落进固定五桶阶梯，due_date 算 days_past_due 判逾期；结果汇总为 report 字段，再由 ar.export（R1，summary 或 detail）写到 $DSH_HOME/dsh-ar-aging/exports/">
+</picture>
 
 ## 三步上手
 
@@ -273,7 +278,7 @@ node --test test/*.test.mjs
 node scripts/gate.mjs
 ```
 
-当前版本 `0.1.0`，53 项测试通过（`node --test test/*.test.mjs`）。发布门禁：`node scripts/gate.mjs`（元数据 lint + 公开验收行全过 + 四个稳定错误码全被触发）。开头流程图由 [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) 程序化生成（Python 标准库，纯 SVG、命令 token 文案、深浅双版），可重复执行；`docs/assets/quickstart.png` 为真实运行截图，配合 `docs/assets/quickstart.log` 保留。
+当前版本 `0.1.0`，53 项测试通过（`node --test test/*.test.mjs`）。发布门禁：`node scripts/gate.mjs`（元数据 lint + 公开验收行全过 + 四个稳定错误码全被触发）。开头横幅与结构图由 [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) 程序化生成（Pillow 画 1440×576 横幅四张 webp，手写 SVG 画 1100×660 结构图深浅双版），可重复执行；`docs/assets/quickstart.png` 为真实运行截图，配合 `docs/assets/quickstart.log` 保留。
 
 Topics：`dsh`、`dsh-plugin`、`deepseek-harness`、`accounts-receivable`、`ar-aging`、`aging-report`、`finance`、`csv`、`perrylink`
 

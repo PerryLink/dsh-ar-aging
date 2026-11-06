@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-flow-dark.svg">
-  <img src="docs/assets/dsh-ar-aging-flow-light.svg" width="100%" alt="dsh-ar-aging pipeline: ar-ledger.csv → ar.ingest validate and normalize (R0) → ar.aging buckets and overdue ratio (R0) → ar.export CSV export (R1) → $DSH_HOME/dsh-ar-aging/exports/; fully local, the source CSV is read-only">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-hero-en-dark.webp">
+  <img src="docs/assets/dsh-ar-aging-hero-en-light.webp" width="100%" alt="dsh-ar-aging banner: fixed five aging buckets (0-30 28.9%, 31-60 21.0%, 61-90 5.9%, 91-180 27.2%, 180+ 17.1%), an overdue-ratio ring at 71.13% and the top overdue customers, all from the checked-in quickstart fixture at as_of 2026-06-30">
 </picture>
 
 # dsh-ar-aging
@@ -40,6 +40,11 @@ Read a local AR ledger CSV, age open invoices from their invoice date (`as_of - 
 
 - **Fits:** 10s to 1000s of rows exported from an ERP or accounting system; a 0-30 / 31-60 / 61-90 / 91-180 / 180+ aging table; an overdue ratio and a top-overdue list for a collections review; a CSV to hand to finance or archive.
 - **Does not fit:** converting multiple currencies into one (no FX here); write-offs, bad-debt provisioning, impairment or collection advice; PDF, scans or Excel as direct input (export CSV first); replacing an auditor, tax adviser or credit decision; credit notes / negative invoices.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-ar-aging-flow-v5-light.svg" width="100%" alt="dsh-ar-aging structure: ar-ledger.csv (7 columns) → ar.ingest validation (R0) → two clocks in parallel, invoice_date yields age_days into the fixed five-bucket staircase, due_date yields days_past_due and the overdue flag; the result is projected to report fields and ar.export (R1, summary or detail) writes it under $DSH_HOME/dsh-ar-aging/exports/">
+</picture>
 
 ## Three-step setup
 
@@ -290,7 +295,7 @@ node --test test/*.test.mjs
 node scripts/gate.mjs
 ```
 
-Current version `0.1.0`; 53 tests pass (`node --test test/*.test.mjs`). Release gate: `node scripts/gate.mjs` (metadata lint + every public acceptance row passing + all four stable error codes exercised). The hero pipeline diagram is generated programmatically by [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Python standard library, pure SVG, command-token labels, light/dark pair) and is safe to re-run; `docs/assets/quickstart.png` is a real captured screenshot, kept together with `docs/assets/quickstart.log`.
+Current version `0.1.0`; 53 tests pass (`node --test test/*.test.mjs`). Release gate: `node scripts/gate.mjs` (metadata lint + every public acceptance row passing + all four stable error codes exercised). The banner and the structure diagram are generated programmatically by [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Pillow for the four 1440x576 webp banners, hand-written SVG for the light/dark 1100x660 diagram) and are safe to re-run; `docs/assets/quickstart.png` is a real captured screenshot, kept together with `docs/assets/quickstart.log`.
 
 Topics: `dsh`, `dsh-plugin`, `deepseek-harness`, `accounts-receivable`, `ar-aging`, `aging-report`, `finance`, `csv`, `perrylink`
 

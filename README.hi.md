@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-flow-dark.svg">
-  <img src="docs/assets/dsh-ar-aging-flow-light.svg" width="100%" alt="dsh-ar-aging पाइपलाइन: ar-ledger.csv → ar.ingest मान्यकरण व सामान्यीकरण (R0) → ar.aging श्रेणियाँ व अतिदेय अनुपात (R0) → ar.export CSV निर्यात (R1) → $DSH_HOME/dsh-ar-aging/exports/; पूरी तरह लोकल, स्रोत CSV केवल-पठन है">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-hero-en-dark.webp">
+  <img src="docs/assets/dsh-ar-aging-hero-en-light.webp" width="100%" alt="dsh-ar-aging बैनर: पाँच निश्चित एजिंग श्रेणियाँ (0-30 28.9%, 31-60 21.0%, 61-90 5.9%, 91-180 27.2%, 180+ 17.1%), 71.13% अतिदेय अनुपात वाला रिंग और शीर्ष अतिदेय ग्राहक; डेटा quickstart fixture से, as_of 2026-06-30">
 </picture>
 
 # dsh-ar-aging
@@ -40,6 +40,11 @@ dsh plugin --profile <profile> add dsh-ar-aging
 
 - **उपयुक्त**: ERP या लेखा प्रणाली से निर्यात की गई दसों से हज़ारों पंक्तियाँ; 0-30 / 31-60 / 61-90 / 91-180 / 180+ एजिंग तालिका; वसूली समीक्षा के लिए अतिदेय अनुपात और शीर्ष-अतिदेय सूची; वित्त को सौंपने या संग्रहीत करने के लिए CSV।
 - **अनुपयुक्त**: कई मुद्राओं को एक में बदलना (यहाँ FX नहीं है); राइट-ऑफ, डूबत-ऋण प्रावधान, मूल्यह्रास या वसूली सलाह; PDF, स्कैन या Excel सीधे इनपुट के रूप में (पहले CSV निर्यात करें); किसी ऑडिटर, कर सलाहकार या ऋण निर्णय का विकल्प; क्रेडिट नोट / ऋणात्मक इनवॉइस।
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-ar-aging-flow-v5-light.svg" width="100%" alt="dsh-ar-aging संरचना: ar-ledger.csv (7 कॉलम) → ar.ingest सत्यापन (R0) → समानांतर दो घड़ियाँ, invoice_date से age_days और निश्चित श्रेणी, due_date से days_past_due और अतिदेय ध्वज; परिणाम रिपोर्ट फ़ील्ड में जाता है और ar.export (R1, summary या detail) उसे $DSH_HOME/dsh-ar-aging/exports/ में लिखता है">
+</picture>
 
 ## तीन चरणों में शुरुआत
 
@@ -291,7 +296,7 @@ node --test test/*.test.mjs
 node scripts/gate.mjs
 ```
 
-वर्तमान संस्करण `0.1.0`; 53 परीक्षण पास (`node --test test/*.test.mjs`)। रिलीज़ गेट: `node scripts/gate.mjs` (मेटाडेटा lint + सभी सार्वजनिक स्वीकृति पंक्तियाँ पास + चारों स्थिर त्रुटि कोड प्रयुक्त)। शीर्षक का पाइपलाइन आरेख [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) द्वारा प्रोग्रामेटिक रूप से बनता है (Python मानक लाइब्रेरी, शुद्ध SVG, कमांड-टोकन लेबल, हल्का/गहरा जोड़ा) और सुरक्षित रूप से दोबारा चलाया जा सकता है; `docs/assets/quickstart.png` वास्तविक कैप्चर किया गया स्क्रीनशॉट है, `docs/assets/quickstart.log` के साथ सुरक्षित।
+वर्तमान संस्करण `0.1.0`; 53 परीक्षण पास (`node --test test/*.test.mjs`)। रिलीज़ गेट: `node scripts/gate.mjs` (मेटाडेटा lint + सभी सार्वजनिक स्वीकृति पंक्तियाँ पास + चारों स्थिर त्रुटि कोड प्रयुक्त)। बैनर और संरचना आरेख [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) द्वारा प्रोग्रामेटिक रूप से बनते हैं (चार 1440x576 webp बैनर Pillow से, 1100x660 हल्का/गहरा आरेख हाथ से लिखे SVG से) और सुरक्षित रूप से दोबारा चलाए जा सकते हैं; `docs/assets/quickstart.png` वास्तविक कैप्चर किया गया स्क्रीनशॉट है, `docs/assets/quickstart.log` के साथ सुरक्षित।
 
 Topics: `dsh`, `dsh-plugin`, `deepseek-harness`, `accounts-receivable`, `ar-aging`, `aging-report`, `finance`, `csv`, `perrylink`
 

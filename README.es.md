@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-flow-dark.svg">
-  <img src="docs/assets/dsh-ar-aging-flow-light.svg" width="100%" alt="Pipeline de dsh-ar-aging: ar-ledger.csv → ar.ingest valida y normaliza (R0) → ar.aging tramos y ratio vencido (R0) → ar.export exporta CSV (R1) → $DSH_HOME/dsh-ar-aging/exports/; todo local, el CSV de origen es de solo lectura">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-hero-en-dark.webp">
+  <img src="docs/assets/dsh-ar-aging-hero-en-light.webp" width="100%" alt="Banner de dsh-ar-aging: cinco tramos fijos de antigüedad (0-30 28,9 %, 31-60 21,0 %, 61-90 5,9 %, 91-180 27,2 %, 180+ 17,1 %), anillo del ratio vencido en 71,13 % y principales clientes vencidos; datos del fixture quickstart con as_of 2026-06-30">
 </picture>
 
 # dsh-ar-aging
@@ -40,6 +40,11 @@ En una frase: lee un CSV local de cuentas por cobrar, calcula la antigüedad des
 
 - **Encaja**: decenas a miles de filas exportadas de un ERP o sistema contable; una tabla de aging 0-30 / 31-60 / 61-90 / 91-180 / 180+; un ratio vencido y una lista de principales vencidos para una revisión de cobros; un CSV para entregar a finanzas o archivar.
 - **No encaja**: convertir varias monedas en una (aquí no hay FX); castigos, provisiones por dudosos, deterioro o consejos de cobro; PDF, escaneos o Excel como entrada directa (exporta primero a CSV); sustituir a un auditor, asesor fiscal o decisión de crédito; notas de crédito / facturas negativas.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-ar-aging-flow-v5-light.svg" width="100%" alt="Estructura de dsh-ar-aging: ar-ledger.csv (7 columnas) → validación ar.ingest (R0) → dos relojes en paralelo, invoice_date da age_days y el tramo fijo, due_date da days_past_due y la marca de vencido; el resultado se proyecta a los campos del informe y ar.export (R1, summary o detail) lo escribe en $DSH_HOME/dsh-ar-aging/exports/">
+</picture>
 
 ## Instalación en tres pasos
 
@@ -291,7 +296,7 @@ node --test test/*.test.mjs
 node scripts/gate.mjs
 ```
 
-Versión actual `0.1.0`; 53 pruebas en verde (`node --test test/*.test.mjs`). Puerta de publicación: `node scripts/gate.mjs` (lint de metadatos + todas las filas públicas de aceptación en verde + los cuatro códigos de error estables ejercitados). El diagrama de pipeline de la cabecera lo genera programáticamente [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (biblioteca estándar de Python, SVG puro, etiquetas de tokens de comandos, par claro/oscuro) y se puede reejecutar sin riesgo; `docs/assets/quickstart.png` es una captura real, conservada junto a `docs/assets/quickstart.log`.
+Versión actual `0.1.0`; 53 pruebas en verde (`node --test test/*.test.mjs`). Puerta de publicación: `node scripts/gate.mjs` (lint de metadatos + todas las filas públicas de aceptación en verde + los cuatro códigos de error estables ejercitados). El banner y el diagrama de estructura los genera programáticamente [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Pillow para los cuatro banners webp de 1440x576, SVG escrito a mano para el diagrama claro/oscuro de 1100x660) y se pueden reejecutar sin riesgo; `docs/assets/quickstart.png` es una captura real, conservada junto a `docs/assets/quickstart.log`.
 
 Topics: `dsh`, `dsh-plugin`, `deepseek-harness`, `accounts-receivable`, `ar-aging`, `aging-report`, `finance`, `csv`, `perrylink`
 
