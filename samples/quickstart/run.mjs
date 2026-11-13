@@ -36,13 +36,13 @@ async function run() {
     const tools = Object.fromEntries(createTools({ baseDir: tempDir }).map((tool) => [tool.name, tool]))
     const exec = { callId: 'quickstart' }
 
-    const ingest = await tools['ar.ingest'].execute({ path: samplePath }, exec)
-    const aging = await tools['ar.aging'].execute({ path: samplePath, as_of: AS_OF }, exec)
-    const summary = await tools['ar.export'].execute(
+    const ingest = await tools['ar_ingest'].execute({ path: samplePath }, exec)
+    const aging = await tools['ar_aging'].execute({ path: samplePath, as_of: AS_OF }, exec)
+    const summary = await tools['ar_export'].execute(
       { path: samplePath, as_of: AS_OF, filename: 'ar-aging-summary.csv' },
       exec,
     )
-    const detail = await tools['ar.export'].execute(
+    const detail = await tools['ar_export'].execute(
       { path: samplePath, as_of: AS_OF, filename: 'ar-aging-detail.csv', layout: 'detail' },
       exec,
     )

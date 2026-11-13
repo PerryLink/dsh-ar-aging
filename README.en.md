@@ -43,7 +43,7 @@ Read a local AR ledger CSV, age open invoices from their invoice date (`as_of - 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-flow-v5-dark.svg">
-  <img src="docs/assets/dsh-ar-aging-flow-v5-light.svg" width="100%" alt="dsh-ar-aging structure: ar-ledger.csv (7 columns) → ar.ingest validation (R0) → two clocks in parallel, invoice_date yields age_days into the fixed five-bucket staircase, due_date yields days_past_due and the overdue flag; the result is projected to report fields and ar.export (R1, summary or detail) writes it under $DSH_HOME/dsh-ar-aging/exports/">
+  <img src="docs/assets/dsh-ar-aging-flow-v5-light.svg" width="100%" alt="dsh-ar-aging structure: ar-ledger.csv (7 columns) → ar_ingest validation (R0) → two clocks in parallel, invoice_date yields age_days into the fixed five-bucket staircase, due_date yields days_past_due and the overdue flag; the result is projected to report fields and ar_export (R1, summary or detail) writes it under $DSH_HOME/dsh-ar-aging/exports/">
 </picture>
 
 ## Three-step setup
@@ -82,9 +82,9 @@ Tool names are stable API; tool descriptions stay in English to match runtime ou
 
 | Tool | Purpose | Risk |
 |---|---|---|
-| `ar.ingest` | Validate and normalize the AR CSV; return totals, settled/open counts and a 5-row preview | R0 |
-| `ar.aging` | Build the five aging buckets, customer summary, overdue ratio and top overdue customers at `as_of` | R0 |
-| `ar.export` | Write the customer aging table (`summary`) or invoice-level trace (`detail`) as CSV, returning path + sha256 | R1 local write |
+| `ar_ingest` | Validate and normalize the AR CSV; return totals, settled/open counts and a 5-row preview | R0 |
+| `ar_aging` | Build the five aging buckets, customer summary, overdue ratio and top overdue customers at `as_of` | R0 |
+| `ar_export` | Write the customer aging table (`summary`) or invoice-level trace (`detail`) as CSV, returning path + sha256 | R1 local write |
 
 - **Fixed five buckets** — `0-30` / `31-60` / `61-90` / `91-180` / `180+`; age counts from the invoice date, overdue from the due date, and the two measures never mix.
 - **Customer summary and top overdue** — customers sort by outstanding descending; top overdue sorts by overdue amount, then longest overdue days; `top_n` accepts 1–50 (default 5).
@@ -110,9 +110,9 @@ customer,invoice_no,invoice_date,due_date,amount_cents,currency,paid_cents
 
 ## Output
 
-- `ar.ingest`: `{ source_sha256, rows, customers, currency, invoice_date_min, invoice_date_max, due_date_min, due_date_max, total_cents, paid_cents, outstanding_cents, settled_rows, open_rows, preview }`. `preview` holds the first five normalized rows.
-- `ar.aging`: `{ as_of, currency, totals, buckets, customers, top_overdue }`. `totals` carries outstanding, overdue, not-due and `overdue_ratio`; `buckets` is always the five buckets; `customers` is sorted by outstanding; `top_overdue` defaults to five customers (`top_n` accepts 1–50).
-- `ar.export`: writes the aging table under `$DSH_HOME/dsh-ar-aging/exports/` and returns path, `sha256`, bytes and rows. `layout=summary` (default) is customer × bucket plus a `TOTAL` row; `layout=detail` is one row per open invoice. The source CSV is untouched.
+- `ar_ingest`: `{ source_sha256, rows, customers, currency, invoice_date_min, invoice_date_max, due_date_min, due_date_max, total_cents, paid_cents, outstanding_cents, settled_rows, open_rows, preview }`. `preview` holds the first five normalized rows.
+- `ar_aging`: `{ as_of, currency, totals, buckets, customers, top_overdue }`. `totals` carries outstanding, overdue, not-due and `overdue_ratio`; `buckets` is always the five buckets; `customers` is sorted by outstanding; `top_overdue` defaults to five customers (`top_n` accepts 1–50).
+- `ar_export`: writes the aging table under `$DSH_HOME/dsh-ar-aging/exports/` and returns path, `sha256`, bytes and rows. `layout=summary` (default) is customer × bucket plus a `TOTAL` row; `layout=detail` is one row per open invoice. The source CSV is untouched.
 
 ### Aging rules
 
@@ -155,24 +155,24 @@ This plugin has **no Config keys** — everything is tunable through the three t
 
 | Tool | Parameter | Required | Meaning |
 |---|---|---|---|
-| `ar.ingest` | `path` | yes | Absolute path of the AR ledger CSV |
-| `ar.aging` | `path`, `as_of` | yes | `as_of` is the aging reference date (`YYYY-MM-DD`); pass it explicitly for a reproducible "today" |
-| `ar.aging` | `top_n` | no | Number of top overdue customers, 1–50, default 5 |
-| `ar.export` | `path`, `as_of` | yes | Same as above |
-| `ar.export` | `layout` | no | `summary` (default) or `detail` |
-| `ar.export` | `filename` | no | Export filename, `[A-Za-z0-9._-]` only; defaults to `ar-aging-<as_of>-<layout>.csv` |
+| `ar_ingest` | `path` | yes | Absolute path of the AR ledger CSV |
+| `ar_aging` | `path`, `as_of` | yes | `as_of` is the aging reference date (`YYYY-MM-DD`); pass it explicitly for a reproducible "today" |
+| `ar_aging` | `top_n` | no | Number of top overdue customers, 1–50, default 5 |
+| `ar_export` | `path`, `as_of` | yes | Same as above |
+| `ar_export` | `layout` | no | `summary` (default) or `detail` |
+| `ar_export` | `filename` | no | Export filename, `[A-Za-z0-9._-]` only; defaults to `ar-aging-<as_of>-<layout>.csv` |
 
 Call examples (tool surface):
 
 ```sh
 # 1) validate and see totals
-#    tool surface: ar.ingest({ path: "/abs/path/ar-ledger.csv" })
+#    tool surface: ar_ingest({ path: "/abs/path/ar-ledger.csv" })
 
 # 2) build the aging report
-#    tool surface: ar.aging({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", top_n: 5 })
+#    tool surface: ar_aging({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", top_n: 5 })
 
 # 3) export CSV
-#    tool surface: ar.export({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", layout: "summary" })
+#    tool surface: ar_export({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", layout: "summary" })
 ```
 
 Tests can override the local write root with the `DSH_AR_AGING_HOME` environment variable; the default is exactly `$DSH_HOME/dsh-ar-aging`.
@@ -221,7 +221,7 @@ Write: `$DSH_HOME/dsh-ar-aging/exports/` only; the source CSV is not modified.
 Network: no.
 External systems: none.
 
-`ar.ingest` and `ar.aging` are **R0** (read-only). `ar.export` is **R1** (local write under `$DSH_HOME/dsh-ar-aging/exports/`). `DSH_AR_AGING_HOME` can override the local write root for tests; the default is exactly `$DSH_HOME/dsh-ar-aging`.
+`ar_ingest` and `ar_aging` are **R0** (read-only). `ar_export` is **R1** (local write under `$DSH_HOME/dsh-ar-aging/exports/`). `DSH_AR_AGING_HOME` can override the local write root for tests; the default is exactly `$DSH_HOME/dsh-ar-aging`.
 
 ## Error codes
 
@@ -295,7 +295,7 @@ node --test test/*.test.mjs
 node scripts/gate.mjs
 ```
 
-Current version `0.1.0`; 53 tests pass (`node --test test/*.test.mjs`). Release gate: `node scripts/gate.mjs` (metadata lint + every public acceptance row passing + all four stable error codes exercised). The banner and the structure diagram are generated programmatically by [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Pillow for the four 1440x576 webp banners, hand-written SVG for the light/dark 1100x660 diagram) and are safe to re-run; `docs/assets/quickstart.png` is a real captured screenshot, kept together with `docs/assets/quickstart.log`.
+Current version `0.2.0`; 54 tests pass (`node --test test/*.test.mjs`). Release gate: `node scripts/gate.mjs` (metadata lint + every public acceptance row passing + all four stable error codes exercised). The banner and the structure diagram are generated programmatically by [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Pillow for the four 1440x576 webp banners, hand-written SVG for the light/dark 1100x660 diagram) and are safe to re-run; `docs/assets/quickstart.png` is a real captured screenshot, kept together with `docs/assets/quickstart.log`.
 
 Topics: `dsh`, `dsh-plugin`, `deepseek-harness`, `accounts-receivable`, `ar-aging`, `aging-report`, `finance`, `csv`, `perrylink`
 

@@ -43,7 +43,7 @@ dsh plugin --profile <profile> add dsh-ar-aging
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-flow-v5-dark.svg">
-  <img src="docs/assets/dsh-ar-aging-flow-v5-light.svg" width="100%" alt="dsh-ar-aging संरचना: ar-ledger.csv (7 कॉलम) → ar.ingest सत्यापन (R0) → समानांतर दो घड़ियाँ, invoice_date से age_days और निश्चित श्रेणी, due_date से days_past_due और अतिदेय ध्वज; परिणाम रिपोर्ट फ़ील्ड में जाता है और ar.export (R1, summary या detail) उसे $DSH_HOME/dsh-ar-aging/exports/ में लिखता है">
+  <img src="docs/assets/dsh-ar-aging-flow-v5-light.svg" width="100%" alt="dsh-ar-aging संरचना: ar-ledger.csv (7 कॉलम) → ar_ingest सत्यापन (R0) → समानांतर दो घड़ियाँ, invoice_date से age_days और निश्चित श्रेणी, due_date से days_past_due और अतिदेय ध्वज; परिणाम रिपोर्ट फ़ील्ड में जाता है और ar_export (R1, summary या detail) उसे $DSH_HOME/dsh-ar-aging/exports/ में लिखता है">
 </picture>
 
 ## तीन चरणों में शुरुआत
@@ -82,9 +82,9 @@ dsh plugin --profile <profile> add dsh-ar-aging
 
 | टूल | उद्देश्य | जोखिम |
 |---|---|---|
-| `ar.ingest` | AR CSV मान्य व सामान्यीकृत करता है; कुल योग, निपटी/खुली संख्याएँ और 5-पंक्ति पूर्वावलोकन लौटाता है | R0 |
-| `ar.aging` | `as_of` पर पाँच एजिंग श्रेणियाँ, ग्राहक सारांश, अतिदेय अनुपात और शीर्ष अतिदेय ग्राहक बनाता है | R0 |
-| `ar.export` | ग्राहक एजिंग तालिका (`summary`) या इनवॉइस-स्तरीय विवरण (`detail`) CSV के रूप में लिखता है, पथ + sha256 लौटाता है | R1 लोकल राइट |
+| `ar_ingest` | AR CSV मान्य व सामान्यीकृत करता है; कुल योग, निपटी/खुली संख्याएँ और 5-पंक्ति पूर्वावलोकन लौटाता है | R0 |
+| `ar_aging` | `as_of` पर पाँच एजिंग श्रेणियाँ, ग्राहक सारांश, अतिदेय अनुपात और शीर्ष अतिदेय ग्राहक बनाता है | R0 |
+| `ar_export` | ग्राहक एजिंग तालिका (`summary`) या इनवॉइस-स्तरीय विवरण (`detail`) CSV के रूप में लिखता है, पथ + sha256 लौटाता है | R1 लोकल राइट |
 
 - **पाँच स्थिर श्रेणियाँ** — `0-30` / `31-60` / `61-90` / `91-180` / `180+`; आयु इनवॉइस तिथि से और अतिदेय देय तिथि से मापा जाता है, दोनों कभी नहीं मिलते।
 - **ग्राहक सारांश और शीर्ष अतिदेय** — ग्राहक बकाया अवरोही क्रम में; शीर्ष अतिदेय अतिदेय राशि, फिर सबसे लंबे अतिदेय दिनों के क्रम में; `top_n` 1–50 स्वीकार करता है (डिफ़ॉल्ट 5)।
@@ -111,9 +111,9 @@ dsh plugin --profile <profile> add dsh-ar-aging
 
 ## आउटपुट
 
-- `ar.ingest`: `{ source_sha256, rows, customers, currency, invoice_date_min, invoice_date_max, due_date_min, due_date_max, total_cents, paid_cents, outstanding_cents, settled_rows, open_rows, preview }`। `preview` में पहली पाँच सामान्यीकृत पंक्तियाँ होती हैं।
-- `ar.aging`: `{ as_of, currency, totals, buckets, customers, top_overdue }`। `totals` में बकाया, अतिदेय, अदेय और `overdue_ratio` होता है; `buckets` हमेशा पाँच श्रेणियाँ; `customers` बकाया क्रम से क्रमबद्ध; `top_overdue` डिफ़ॉल्ट पाँच ग्राहक (`top_n` 1–50 स्वीकार करता है)।
-- `ar.export`: एजिंग तालिका `$DSH_HOME/dsh-ar-aging/exports/` के तहत लिखता है और पथ, `sha256`, बाइट्स और पंक्तियाँ लौटाता है। `layout=summary` (डिफ़ॉल्ट) ग्राहक × श्रेणी + `TOTAL` पंक्ति है; `layout=detail` प्रत्येक खुली इनवॉइस पर एक पंक्ति। स्रोत CSV अछूती रहती है।
+- `ar_ingest`: `{ source_sha256, rows, customers, currency, invoice_date_min, invoice_date_max, due_date_min, due_date_max, total_cents, paid_cents, outstanding_cents, settled_rows, open_rows, preview }`। `preview` में पहली पाँच सामान्यीकृत पंक्तियाँ होती हैं।
+- `ar_aging`: `{ as_of, currency, totals, buckets, customers, top_overdue }`। `totals` में बकाया, अतिदेय, अदेय और `overdue_ratio` होता है; `buckets` हमेशा पाँच श्रेणियाँ; `customers` बकाया क्रम से क्रमबद्ध; `top_overdue` डिफ़ॉल्ट पाँच ग्राहक (`top_n` 1–50 स्वीकार करता है)।
+- `ar_export`: एजिंग तालिका `$DSH_HOME/dsh-ar-aging/exports/` के तहत लिखता है और पथ, `sha256`, बाइट्स और पंक्तियाँ लौटाता है। `layout=summary` (डिफ़ॉल्ट) ग्राहक × श्रेणी + `TOTAL` पंक्ति है; `layout=detail` प्रत्येक खुली इनवॉइस पर एक पंक्ति। स्रोत CSV अछूती रहती है।
 
 ### एजिंग नियम
 
@@ -156,24 +156,24 @@ node samples/quickstart/run.mjs --check
 
 | टूल | पैरामीटर | आवश्यक | अर्थ |
 |---|---|---|---|
-| `ar.ingest` | `path` | हाँ | AR लेजर CSV का निरपेक्ष पथ |
-| `ar.aging` | `path`, `as_of` | हाँ | `as_of` एजिंग संदर्भ तिथि है (`YYYY-MM-DD`); पुनरुत्पाद्य «आज» के लिए स्पष्ट रूप से दें |
-| `ar.aging` | `top_n` | नहीं | शीर्ष अतिदेय ग्राहकों की संख्या, 1–50, डिफ़ॉल्ट 5 |
-| `ar.export` | `path`, `as_of` | हाँ | ऊपर जैसा |
-| `ar.export` | `layout` | नहीं | `summary` (डिफ़ॉल्ट) या `detail` |
-| `ar.export` | `filename` | नहीं | निर्यात फ़ाइलनाम, केवल `[A-Za-z0-9._-]`; डिफ़ॉल्ट `ar-aging-<as_of>-<layout>.csv` |
+| `ar_ingest` | `path` | हाँ | AR लेजर CSV का निरपेक्ष पथ |
+| `ar_aging` | `path`, `as_of` | हाँ | `as_of` एजिंग संदर्भ तिथि है (`YYYY-MM-DD`); पुनरुत्पाद्य «आज» के लिए स्पष्ट रूप से दें |
+| `ar_aging` | `top_n` | नहीं | शीर्ष अतिदेय ग्राहकों की संख्या, 1–50, डिफ़ॉल्ट 5 |
+| `ar_export` | `path`, `as_of` | हाँ | ऊपर जैसा |
+| `ar_export` | `layout` | नहीं | `summary` (डिफ़ॉल्ट) या `detail` |
+| `ar_export` | `filename` | नहीं | निर्यात फ़ाइलनाम, केवल `[A-Za-z0-9._-]`; डिफ़ॉल्ट `ar-aging-<as_of>-<layout>.csv` |
 
 कॉल उदाहरण (टूल सतह):
 
 ```sh
 # 1) मान्य करें और कुल देखें
-#    टूल सतह: ar.ingest({ path: "/abs/path/ar-ledger.csv" })
+#    टूल सतह: ar_ingest({ path: "/abs/path/ar-ledger.csv" })
 
 # 2) एजिंग रिपोर्ट बनाएँ
-#    टूल सतह: ar.aging({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", top_n: 5 })
+#    टूल सतह: ar_aging({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", top_n: 5 })
 
 # 3) CSV निर्यात करें
-#    टूल सतह: ar.export({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", layout: "summary" })
+#    टूल सतह: ar_export({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", layout: "summary" })
 ```
 
 परीक्षण `DSH_AR_AGING_HOME` पर्यावरण चर से लोकल राइट रूट बदल सकते हैं; डिफ़ॉल्ट ठीक-ठीक `$DSH_HOME/dsh-ar-aging` है।
@@ -222,7 +222,7 @@ node samples/quickstart/run.mjs --check
 नेटवर्क: नहीं।
 बाहरी सिस्टम: कोई नहीं।
 
-`ar.ingest` और `ar.aging` **R0** हैं (केवल-पठन)। `ar.export` **R1** है (`$DSH_HOME/dsh-ar-aging/exports/` के तहत लोकल राइट)। परीक्षणों के लिए `DSH_AR_AGING_HOME` लोकल राइट रूट बदल सकता है; डिफ़ॉल्ट ठीक-ठीक `$DSH_HOME/dsh-ar-aging` है।
+`ar_ingest` और `ar_aging` **R0** हैं (केवल-पठन)। `ar_export` **R1** है (`$DSH_HOME/dsh-ar-aging/exports/` के तहत लोकल राइट)। परीक्षणों के लिए `DSH_AR_AGING_HOME` लोकल राइट रूट बदल सकता है; डिफ़ॉल्ट ठीक-ठीक `$DSH_HOME/dsh-ar-aging` है।
 
 ## त्रुटि कोड
 
@@ -296,7 +296,7 @@ node --test test/*.test.mjs
 node scripts/gate.mjs
 ```
 
-वर्तमान संस्करण `0.1.0`; 53 परीक्षण पास (`node --test test/*.test.mjs`)। रिलीज़ गेट: `node scripts/gate.mjs` (मेटाडेटा lint + सभी सार्वजनिक स्वीकृति पंक्तियाँ पास + चारों स्थिर त्रुटि कोड प्रयुक्त)। बैनर और संरचना आरेख [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) द्वारा प्रोग्रामेटिक रूप से बनते हैं (चार 1440x576 webp बैनर Pillow से, 1100x660 हल्का/गहरा आरेख हाथ से लिखे SVG से) और सुरक्षित रूप से दोबारा चलाए जा सकते हैं; `docs/assets/quickstart.png` वास्तविक कैप्चर किया गया स्क्रीनशॉट है, `docs/assets/quickstart.log` के साथ सुरक्षित।
+वर्तमान संस्करण `0.2.0`; 54 परीक्षण पास (`node --test test/*.test.mjs`)। रिलीज़ गेट: `node scripts/gate.mjs` (मेटाडेटा lint + सभी सार्वजनिक स्वीकृति पंक्तियाँ पास + चारों स्थिर त्रुटि कोड प्रयुक्त)। बैनर और संरचना आरेख [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) द्वारा प्रोग्रामेटिक रूप से बनते हैं (चार 1440x576 webp बैनर Pillow से, 1100x660 हल्का/गहरा आरेख हाथ से लिखे SVG से) और सुरक्षित रूप से दोबारा चलाए जा सकते हैं; `docs/assets/quickstart.png` वास्तविक कैप्चर किया गया स्क्रीनशॉट है, `docs/assets/quickstart.log` के साथ सुरक्षित।
 
 Topics: `dsh`, `dsh-plugin`, `deepseek-harness`, `accounts-receivable`, `ar-aging`, `aging-report`, `finance`, `csv`, `perrylink`
 

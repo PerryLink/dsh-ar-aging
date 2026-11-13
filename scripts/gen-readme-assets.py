@@ -338,7 +338,7 @@ def flow_svg(skin_name):
     shadow_op = "0.10" if skin_name == "light" else "0.55"
     shadow_col = "#1b1735" if skin_name == "light" else "#000000"
 
-    p.append(f'''<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="660" viewBox="0 0 1100 660" role="img" aria-label="dsh-ar-aging: one AR ledger CSV is read by ar.ingest, then two clocks run on the same dataset - invoice_date gives age_days and one of five fixed buckets, due_date gives days_past_due and the overdue flag - and ar.export writes summary or detail CSV under DSH_HOME">
+    p.append(f'''<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="660" viewBox="0 0 1100 660" role="img" aria-label="dsh-ar-aging: one AR ledger CSV is read by ar_ingest, then two clocks run on the same dataset - invoice_date gives age_days and one of five fixed buckets, due_date gives days_past_due and the overdue flag - and ar_export writes summary or detail CSV under DSH_HOME">
 <title>dsh-ar-aging: two clocks, five fixed buckets, one local CSV</title>
 <defs>
   <linearGradient id="bg" x1="0" y1="0" x2="0.35" y2="1">
@@ -375,7 +375,7 @@ def flow_svg(skin_name):
         p.append(f'<circle cx="66" cy="{y - 4}" r="2.6" fill="{s["accent"]}" opacity=".55"/>')
         p.append(f'<text x="78" y="{y}" fill="{s["sub"]}" font-family="{MONO}" font-size="14">{name}</text>')
     p.append(f'''<rect x="60" y="430" width="142" height="26" rx="13" fill="{s['pill']}"/>
-<text x="72" y="448" fill="{s['accent']}" font-family="{MONO}" font-size="14">ar.ingest · R0</text>
+<text x="72" y="448" fill="{s['accent']}" font-family="{MONO}" font-size="14">ar_ingest · R0</text>
 <path d="M275 291 L285 300 L275 309" fill="none" stroke="{s['accent']}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity=".75"/>''')
 
     # ---- engine zone (two clocks + staircase)
@@ -384,7 +384,7 @@ def flow_svg(skin_name):
 <text x="312" y="182" fill="{s['sub']}" font-family="{SANS}" font-size="14">as_of − invoice_date → age_days → bucket</text>
 <text x="312" y="202" fill="{s['faint']}" font-family="{SANS}" font-size="14">fixed · 0 / 31 / 61 / 91 / 181 days · bar ∝ share</text>
 <rect x="664" y="140" width="104" height="26" rx="13" fill="{s['pill']}"/>
-<text x="674" y="158" fill="{s['accent']}" font-family="{MONO}" font-size="14">ar.aging · R0</text>
+<text x="674" y="158" fill="{s['accent']}" font-family="{MONO}" font-size="14">ar_aging · R0</text>
 <path d="M795 229 L805 238 L795 247" fill="none" stroke="{s['accent']}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity=".75"/>''')
 
     max_amt = BUCKETS[0][3]
@@ -427,7 +427,7 @@ def flow_svg(skin_name):
 
     # ---- right column: report fields
     p.append(f'''<g filter="url(#soft)"><rect x="820" y="368" width="240" height="160" rx="20" fill="{s['card']}" stroke="{s['edge']}" stroke-width="1.5"/></g>
-<text x="840" y="398" fill="{s['accent']}" font-family="{MONO}" font-size="17" font-weight="700">report · ar.aging</text>''')
+<text x="840" y="398" fill="{s['accent']}" font-family="{MONO}" font-size="17" font-weight="700">report · ar_aging</text>''')
     for i, field in enumerate(["as_of · currency", "totals · overdue_ratio",
                                "buckets[5] · share", "customers[] · top_overdue"]):
         y = 426 + i * 24
@@ -438,7 +438,7 @@ def flow_svg(skin_name):
         p.append(f'<line x1="{x}" y1="530" x2="{x}" y2="536" stroke="{s["accent"]}" stroke-width="2" opacity=".55"/>')
         p.append(f'<path d="M{x - 4} 535 L{x + 4} 535 L{x} 541 Z" fill="{s["accent"]}" opacity=".7"/>')
     p.append(f'''<g filter="url(#soft)"><rect x="40" y="540" width="1020" height="64" rx="18" fill="{s['card']}" stroke="{s['edge']}" stroke-width="1.5"/></g>
-<text x="60" y="566" fill="{s['accent']}" font-family="{MONO}" font-size="17" font-weight="700">ar.export · R1</text>
+<text x="60" y="566" fill="{s['accent']}" font-family="{MONO}" font-size="17" font-weight="700">ar_export · R1</text>
 <text x="218" y="566" fill="{s['text']}" font-family="{MONO}" font-size="14">layout=summary → customer × 5 buckets + TOTAL</text>
 <text x="616" y="566" fill="{s['text']}" font-family="{MONO}" font-size="14">layout=detail → 1 row/invoice</text>
 <text x="1040" y="566" fill="{s['faint']}" font-family="{MONO}" font-size="14" text-anchor="end">sha256 · bytes</text>
