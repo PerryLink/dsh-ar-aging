@@ -24,7 +24,7 @@ async function load(sourcePath: string) {
 
 export function createTools(deps: ToolDeps) {
   const ingest = defineTool({
-    name: 'ar.ingest',
+    name: 'ar_ingest',
     description:
       'Validate and normalize a local AR ledger CSV (customer, invoice_no, invoice_date, due_date, amount_cents, currency, paid_cents). Returns totals and a 5-row preview; one file must use one currency. Read-only.',
     parameters: { path: { type: 'string', required: true } },
@@ -77,7 +77,7 @@ export function createTools(deps: ToolDeps) {
   })
 
   const aging = defineTool({
-    name: 'ar.aging',
+    name: 'ar_aging',
     description:
       'Bucket open AR invoices by age at as_of into 0-30/31-60/61-90/91-180/180+ days (age counts from invoice_date), then return customer totals, overdue ratio (by due_date) and the top overdue customers. Read-only.',
     parameters: {
@@ -182,7 +182,7 @@ export function createTools(deps: ToolDeps) {
   })
 
   const exportTool = defineTool({
-    name: 'ar.export',
+    name: 'ar_export',
     description:
       'Write the AR aging table as CSV under $DSH_HOME/dsh-ar-aging/exports. layout=summary (customer x bucket + TOTAL) or detail (one row per open invoice); returns path, sha256, bytes and rows.',
     parameters: {

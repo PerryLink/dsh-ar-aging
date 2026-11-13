@@ -43,7 +43,7 @@ dsh plugin --profile <profile> add dsh-ar-aging
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-flow-v5-dark.svg">
-  <img src="docs/assets/dsh-ar-aging-flow-v5-light.svg" width="100%" alt="dsh-ar-aging 结构：ar-ledger.csv（7 列）→ ar.ingest 校验（R0）→ 两个时钟并行，invoice_date 算 age_days 落进固定五桶阶梯，due_date 算 days_past_due 判逾期；结果汇总为 report 字段，再由 ar.export（R1，summary 或 detail）写到 $DSH_HOME/dsh-ar-aging/exports/">
+  <img src="docs/assets/dsh-ar-aging-flow-v5-light.svg" width="100%" alt="dsh-ar-aging 结构：ar-ledger.csv（7 列）→ ar_ingest 校验（R0）→ 两个时钟并行，invoice_date 算 age_days 落进固定五桶阶梯，due_date 算 days_past_due 判逾期；结果汇总为 report 字段，再由 ar_export（R1，summary 或 detail）写到 $DSH_HOME/dsh-ar-aging/exports/">
 </picture>
 
 ## 三步上手
@@ -82,9 +82,9 @@ dsh plugin --profile <profile> add dsh-ar-aging
 
 | 工具 | 用途 | 风险 |
 |---|---|---|
-| `ar.ingest` | 校验并规范化应收明细 CSV，返回总数、已结清/未收行数和 5 行预览 | R0 |
-| `ar.aging` | 按 `as_of` 出 5 个账龄桶、客户汇总、逾期占比和 Top 逾期客户 | R0 |
-| `ar.export` | 导出客户账龄表（summary）或逐票明细（detail）CSV，返回路径与 sha256 | R1 本地写 |
+| `ar_ingest` | 校验并规范化应收明细 CSV，返回总数、已结清/未收行数和 5 行预览 | R0 |
+| `ar_aging` | 按 `as_of` 出 5 个账龄桶、客户汇总、逾期占比和 Top 逾期客户 | R0 |
+| `ar_export` | 导出客户账龄表（summary）或逐票明细（detail）CSV，返回路径与 sha256 | R1 本地写 |
 
 - **固定五桶账龄** —— `0-30` / `31-60` / `61-90` / `91-180` / `180+`，账龄从开票日起算，逾期从到期日起算，两个口径互不混淆。
 - **客户汇总与 Top 逾期** —— 客户按未收金额降序，Top 逾期按逾期金额再按最长逾期天数排序，`top_n` 可调（1–50，默认 5）。
@@ -105,9 +105,9 @@ dsh plugin --profile <profile> add dsh-ar-aging
 
 ## 输出
 
-- `ar.ingest`：`{ source_sha256, rows, customers, currency, invoice_date_min, invoice_date_max, due_date_min, due_date_max, total_cents, paid_cents, outstanding_cents, settled_rows, open_rows, preview }`。`preview` 是前 5 行规范化结果。
-- `ar.aging`：`{ as_of, currency, totals, buckets, customers, top_overdue }`。`totals` 含未收、逾期、未到期和 `overdue_ratio`；`buckets` 固定 5 桶；`customers` 按未收降序；`top_overdue` 默认 5 个客户（`top_n` 可调，1–50）。
-- `ar.export`：把账龄表写到 `$DSH_HOME/dsh-ar-aging/exports/`，返回路径、`sha256`、字节数、行数。`layout=summary`（默认）是客户 × 分桶 + `TOTAL` 行；`layout=detail` 是每个未收发票一行。原 CSV 不改。
+- `ar_ingest`：`{ source_sha256, rows, customers, currency, invoice_date_min, invoice_date_max, due_date_min, due_date_max, total_cents, paid_cents, outstanding_cents, settled_rows, open_rows, preview }`。`preview` 是前 5 行规范化结果。
+- `ar_aging`：`{ as_of, currency, totals, buckets, customers, top_overdue }`。`totals` 含未收、逾期、未到期和 `overdue_ratio`；`buckets` 固定 5 桶；`customers` 按未收降序；`top_overdue` 默认 5 个客户（`top_n` 可调，1–50）。
+- `ar_export`：把账龄表写到 `$DSH_HOME/dsh-ar-aging/exports/`，返回路径、`sha256`、字节数、行数。`layout=summary`（默认）是客户 × 分桶 + `TOTAL` 行；`layout=detail` 是每个未收发票一行。原 CSV 不改。
 
 ### 账龄规则
 
@@ -144,24 +144,24 @@ node samples/quickstart/run.mjs --check
 
 | 工具 | 参数 | 必填 | 含义 |
 |---|---|---|---|
-| `ar.ingest` | `path` | 是 | 应收明细 CSV 的绝对路径 |
-| `ar.aging` | `path`、`as_of` | 是 | `as_of` 为账龄基准日（`YYYY-MM-DD`），显式传入可复现「今天」 |
-| `ar.aging` | `top_n` | 否 | Top 逾期客户数量，1–50，默认 5 |
-| `ar.export` | `path`、`as_of` | 是 | 同上 |
-| `ar.export` | `layout` | 否 | `summary`（默认）或 `detail` |
-| `ar.export` | `filename` | 否 | 导出文件名，只允许 `[A-Za-z0-9._-]`；默认 `ar-aging-<as_of>-<layout>.csv` |
+| `ar_ingest` | `path` | 是 | 应收明细 CSV 的绝对路径 |
+| `ar_aging` | `path`、`as_of` | 是 | `as_of` 为账龄基准日（`YYYY-MM-DD`），显式传入可复现「今天」 |
+| `ar_aging` | `top_n` | 否 | Top 逾期客户数量，1–50，默认 5 |
+| `ar_export` | `path`、`as_of` | 是 | 同上 |
+| `ar_export` | `layout` | 否 | `summary`（默认）或 `detail` |
+| `ar_export` | `filename` | 否 | 导出文件名，只允许 `[A-Za-z0-9._-]`；默认 `ar-aging-<as_of>-<layout>.csv` |
 
 调用示例（工具面）：
 
 ```sh
 # 1) 校验并看总数
-#    工具面：ar.ingest({ path: "/abs/path/ar-ledger.csv" })
+#    工具面：ar_ingest({ path: "/abs/path/ar-ledger.csv" })
 
 # 2) 出账龄表
-#    工具面：ar.aging({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", top_n: 5 })
+#    工具面：ar_aging({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", top_n: 5 })
 
 # 3) 导出 CSV
-#    工具面：ar.export({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", layout: "summary" })
+#    工具面：ar_export({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", layout: "summary" })
 ```
 
 测试可用环境变量 `DSH_AR_AGING_HOME` 覆盖本地写根目录；默认严格等于 `$DSH_HOME/dsh-ar-aging`。
@@ -210,7 +210,7 @@ node samples/quickstart/run.mjs --check
 联网：否。
 外部系统：无。
 
-`ar.ingest`、`ar.aging` 标 **R0**（只读）；`ar.export` 标 **R1**（本地写，只写 `$DSH_HOME/dsh-ar-aging/exports/`）。测试可用 `DSH_AR_AGING_HOME` 覆盖本地写根目录，默认严格等于 `$DSH_HOME/dsh-ar-aging`。
+`ar_ingest`、`ar_aging` 标 **R0**（只读）；`ar_export` 标 **R1**（本地写，只写 `$DSH_HOME/dsh-ar-aging/exports/`）。测试可用 `DSH_AR_AGING_HOME` 覆盖本地写根目录，默认严格等于 `$DSH_HOME/dsh-ar-aging`。
 
 ## 错误码
 
@@ -278,7 +278,7 @@ node --test test/*.test.mjs
 node scripts/gate.mjs
 ```
 
-当前版本 `0.1.0`，53 项测试通过（`node --test test/*.test.mjs`）。发布门禁：`node scripts/gate.mjs`（元数据 lint + 公开验收行全过 + 四个稳定错误码全被触发）。开头横幅与结构图由 [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) 程序化生成（Pillow 画 1440×576 横幅四张 webp，手写 SVG 画 1100×660 结构图深浅双版），可重复执行；`docs/assets/quickstart.png` 为真实运行截图，配合 `docs/assets/quickstart.log` 保留。
+当前版本 `0.2.0`，54 项测试通过（`node --test test/*.test.mjs`）。发布门禁：`node scripts/gate.mjs`（元数据 lint + 公开验收行全过 + 四个稳定错误码全被触发）。开头横幅与结构图由 [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) 程序化生成（Pillow 画 1440×576 横幅四张 webp，手写 SVG 画 1100×660 结构图深浅双版），可重复执行；`docs/assets/quickstart.png` 为真实运行截图，配合 `docs/assets/quickstart.log` 保留。
 
 Topics：`dsh`、`dsh-plugin`、`deepseek-harness`、`accounts-receivable`、`ar-aging`、`aging-report`、`finance`、`csv`、`perrylink`
 

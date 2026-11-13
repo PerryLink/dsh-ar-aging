@@ -43,7 +43,7 @@ Em uma frase: lê um CSV local de contas a receber, calcula a idade a partir da 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-ar-aging-flow-v5-dark.svg">
-  <img src="docs/assets/dsh-ar-aging-flow-v5-light.svg" width="100%" alt="Estrutura do dsh-ar-aging: ar-ledger.csv (7 colunas) → validação ar.ingest (R0) → dois relógios em paralelo, invoice_date dá age_days e a faixa fixa, due_date dá days_past_due e a marca de vencido; o resultado é projetado nos campos do relatório e ar.export (R1, summary ou detail) grava em $DSH_HOME/dsh-ar-aging/exports/">
+  <img src="docs/assets/dsh-ar-aging-flow-v5-light.svg" width="100%" alt="Estrutura do dsh-ar-aging: ar-ledger.csv (7 colunas) → validação ar_ingest (R0) → dois relógios em paralelo, invoice_date dá age_days e a faixa fixa, due_date dá days_past_due e a marca de vencido; o resultado é projetado nos campos do relatório e ar_export (R1, summary ou detail) grava em $DSH_HOME/dsh-ar-aging/exports/">
 </picture>
 
 ## Instalação em três passos
@@ -82,9 +82,9 @@ Os nomes das ferramentas são API estável; as descrições permanecem em inglê
 
 | Ferramenta | Finalidade | Risco |
 |---|---|---|
-| `ar.ingest` | Valida e normaliza o CSV de contas a receber; devolve totais, contagens de liquidadas/abertas e uma prévia de 5 linhas | R0 |
-| `ar.aging` | Constrói as cinco faixas de aging, o resumo por cliente, o índice vencido e os principais clientes vencidos em `as_of` | R0 |
-| `ar.export` | Grava a tabela de aging por cliente (`summary`) ou o detalhe por fatura (`detail`) em CSV, devolvendo caminho + sha256 | R1 escrita local |
+| `ar_ingest` | Valida e normaliza o CSV de contas a receber; devolve totais, contagens de liquidadas/abertas e uma prévia de 5 linhas | R0 |
+| `ar_aging` | Constrói as cinco faixas de aging, o resumo por cliente, o índice vencido e os principais clientes vencidos em `as_of` | R0 |
+| `ar_export` | Grava a tabela de aging por cliente (`summary`) ou o detalhe por fatura (`detail`) em CSV, devolvendo caminho + sha256 | R1 escrita local |
 
 - **Cinco faixas fixas** — `0-30` / `31-60` / `61-90` / `91-180` / `180+`; a idade conta a partir da data da fatura e o vencimento a partir da data de vencimento, e as duas medidas nunca se misturam.
 - **Resumo por cliente e top vencidos** — clientes ordenados por valor em aberto decrescente; o top vencido ordena por valor vencido e depois pelos dias máximos de atraso; `top_n` aceita 1–50 (padrão 5).
@@ -111,9 +111,9 @@ Os nomes das ferramentas são API estável; as descrições permanecem em inglê
 
 ## Saída
 
-- `ar.ingest`: `{ source_sha256, rows, customers, currency, invoice_date_min, invoice_date_max, due_date_min, due_date_max, total_cents, paid_cents, outstanding_cents, settled_rows, open_rows, preview }`. `preview` contém as cinco primeiras linhas normalizadas.
-- `ar.aging`: `{ as_of, currency, totals, buckets, customers, top_overdue }`. `totals` traz em aberto, vencido, não vencido e `overdue_ratio`; `buckets` são sempre as cinco faixas; `customers` é ordenado por valor em aberto; `top_overdue` traz por padrão cinco clientes (`top_n` aceita 1–50).
-- `ar.export`: grava a tabela de aging em `$DSH_HOME/dsh-ar-aging/exports/` e devolve caminho, `sha256`, bytes e linhas. `layout=summary` (padrão) é cliente × faixa mais uma linha `TOTAL`; `layout=detail` é uma linha por fatura em aberto. O CSV de origem não é tocado.
+- `ar_ingest`: `{ source_sha256, rows, customers, currency, invoice_date_min, invoice_date_max, due_date_min, due_date_max, total_cents, paid_cents, outstanding_cents, settled_rows, open_rows, preview }`. `preview` contém as cinco primeiras linhas normalizadas.
+- `ar_aging`: `{ as_of, currency, totals, buckets, customers, top_overdue }`. `totals` traz em aberto, vencido, não vencido e `overdue_ratio`; `buckets` são sempre as cinco faixas; `customers` é ordenado por valor em aberto; `top_overdue` traz por padrão cinco clientes (`top_n` aceita 1–50).
+- `ar_export`: grava a tabela de aging em `$DSH_HOME/dsh-ar-aging/exports/` e devolve caminho, `sha256`, bytes e linhas. `layout=summary` (padrão) é cliente × faixa mais uma linha `TOTAL`; `layout=detail` é uma linha por fatura em aberto. O CSV de origem não é tocado.
 
 ### Regras de aging
 
@@ -156,24 +156,24 @@ Este plugin **não tem chaves de Config** — tudo se ajusta pelos parâmetros d
 
 | Ferramenta | Parâmetro | Obrigatório | Significado |
 |---|---|---|---|
-| `ar.ingest` | `path` | sim | Caminho absoluto do CSV de contas a receber |
-| `ar.aging` | `path`, `as_of` | sim | `as_of` é a data de referência do aging (`YYYY-MM-DD`); passe-a explicitamente para um «hoje» reproduzível |
-| `ar.aging` | `top_n` | não | Número de principais clientes vencidos, 1–50, padrão 5 |
-| `ar.export` | `path`, `as_of` | sim | Igual ao acima |
-| `ar.export` | `layout` | não | `summary` (padrão) ou `detail` |
-| `ar.export` | `filename` | não | Nome do arquivo exportado, apenas `[A-Za-z0-9._-]`; padrão `ar-aging-<as_of>-<layout>.csv` |
+| `ar_ingest` | `path` | sim | Caminho absoluto do CSV de contas a receber |
+| `ar_aging` | `path`, `as_of` | sim | `as_of` é a data de referência do aging (`YYYY-MM-DD`); passe-a explicitamente para um «hoje» reproduzível |
+| `ar_aging` | `top_n` | não | Número de principais clientes vencidos, 1–50, padrão 5 |
+| `ar_export` | `path`, `as_of` | sim | Igual ao acima |
+| `ar_export` | `layout` | não | `summary` (padrão) ou `detail` |
+| `ar_export` | `filename` | não | Nome do arquivo exportado, apenas `[A-Za-z0-9._-]`; padrão `ar-aging-<as_of>-<layout>.csv` |
 
 Exemplos de chamada (superfície das ferramentas):
 
 ```sh
 # 1) validar e ver totais
-#    superfície: ar.ingest({ path: "/abs/path/ar-ledger.csv" })
+#    superfície: ar_ingest({ path: "/abs/path/ar-ledger.csv" })
 
 # 2) construir o relatório de aging
-#    superfície: ar.aging({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", top_n: 5 })
+#    superfície: ar_aging({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", top_n: 5 })
 
 # 3) exportar CSV
-#    superfície: ar.export({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", layout: "summary" })
+#    superfície: ar_export({ path: "/abs/path/ar-ledger.csv", as_of: "2026-06-30", layout: "summary" })
 ```
 
 Os testes podem sobrescrever a raiz de escrita local com a variável de ambiente `DSH_AR_AGING_HOME`; o padrão é exatamente `$DSH_HOME/dsh-ar-aging`.
@@ -222,7 +222,7 @@ Escrita: apenas `$DSH_HOME/dsh-ar-aging/exports/`; o CSV de origem não é modif
 Rede: não.
 Sistemas externos: nenhum.
 
-`ar.ingest` e `ar.aging` são **R0** (somente leitura). `ar.export` é **R1** (escrita local em `$DSH_HOME/dsh-ar-aging/exports/`). `DSH_AR_AGING_HOME` pode sobrescrever a raiz de escrita local para testes; o padrão é exatamente `$DSH_HOME/dsh-ar-aging`.
+`ar_ingest` e `ar_aging` são **R0** (somente leitura). `ar_export` é **R1** (escrita local em `$DSH_HOME/dsh-ar-aging/exports/`). `DSH_AR_AGING_HOME` pode sobrescrever a raiz de escrita local para testes; o padrão é exatamente `$DSH_HOME/dsh-ar-aging`.
 
 ## Códigos de erro
 
@@ -296,7 +296,7 @@ node --test test/*.test.mjs
 node scripts/gate.mjs
 ```
 
-Versão atual `0.1.0`; 53 testes passando (`node --test test/*.test.mjs`). Portão de publicação: `node scripts/gate.mjs` (lint de metadados + todas as linhas públicas de aceitação passando + os quatro códigos de erro estáveis exercitados). O banner e o diagrama de estrutura são gerados programaticamente por [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Pillow para os quatro banners webp de 1440x576, SVG escrito à mão para o diagrama claro/escuro de 1100x660) e podem ser reexecutados sem risco; `docs/assets/quickstart.png` é uma captura real, mantida junto com `docs/assets/quickstart.log`.
+Versão atual `0.2.0`; 54 testes passando (`node --test test/*.test.mjs`). Portão de publicação: `node scripts/gate.mjs` (lint de metadados + todas as linhas públicas de aceitação passando + os quatro códigos de erro estáveis exercitados). O banner e o diagrama de estrutura são gerados programaticamente por [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Pillow para os quatro banners webp de 1440x576, SVG escrito à mão para o diagrama claro/escuro de 1100x660) e podem ser reexecutados sem risco; `docs/assets/quickstart.png` é uma captura real, mantida junto com `docs/assets/quickstart.log`.
 
 Topics: `dsh`, `dsh-plugin`, `deepseek-harness`, `accounts-receivable`, `ar-aging`, `aging-report`, `finance`, `csv`, `perrylink`
 

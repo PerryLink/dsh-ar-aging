@@ -10,15 +10,15 @@ import { createTools } from '../lib/plugin/tools.js'
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const samplePath = path.join(packageRoot, 'samples', 'quickstart', 'input', 'ar-ledger.csv')
 
-test('createTools exposes the three ar.* tools with unique names', () => {
+test('createTools exposes the three ar_* tools with unique names', () => {
   const tools = createTools({ baseDir: path.join(os.tmpdir(), 'dsh-ar-aging-smoke') })
   assert.deepEqual(
     tools.map((tool) => tool.name),
-    ['ar.ingest', 'ar.aging', 'ar.export'],
+    ['ar_ingest', 'ar_aging', 'ar_export'],
   )
   assert.equal(new Set(tools.map((tool) => tool.name)).size, 3)
   for (const tool of tools) {
-    assert.ok(tool.name.startsWith('ar.'))
+    assert.ok(tool.name.startsWith('ar_'))
     assert.ok(tool.description.length > 0)
     assert.equal(typeof tool.execute, 'function')
     assert.equal(typeof tool.output.render, 'function')
@@ -49,7 +49,7 @@ test('apply() registers the tools and wires the documented write root', async (t
   assert.deepEqual(plugin.inject, ['tools'])
   assert.equal(registered.length, 3)
 
-  const exporter = registered.find((tool) => tool.name === 'ar.export')
+  const exporter = registered.find((tool) => tool.name === 'ar_export')
   const result = await exporter.execute({ path: samplePath, as_of: '2026-06-30', filename: 'apply.csv' }, { callId: 'apply' })
   assert.ok(result.path.startsWith(`${dir}${path.sep}exports${path.sep}`), result.path)
   assert.equal(result.rows, 7)
@@ -59,8 +59,8 @@ test('every tool render returns one text block', async () => {
   const tools = Object.fromEntries(
     createTools({ baseDir: path.join(os.tmpdir(), 'dsh-ar-aging-render') }).map((tool) => [tool.name, tool]),
   )
-  const ingest = await tools['ar.ingest'].execute({ path: samplePath }, { callId: 'render' })
-  const rendered = tools['ar.ingest'].output.render({ path: samplePath }, ingest)
+  const ingest = await tools['ar_ingest'].execute({ path: samplePath }, { callId: 'render' })
+  const rendered = tools['ar_ingest'].output.render({ path: samplePath }, ingest)
   assert.equal(rendered.length, 1)
   assert.equal(rendered[0].type, 'text')
   assert.match(rendered[0].text, /AR ingest: 13 rows/)

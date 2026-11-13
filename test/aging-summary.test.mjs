@@ -12,7 +12,7 @@ const sample = path.join(root, 'samples', 'quickstart', 'input', 'ar-ledger.csv'
 const baseDir = path.join(os.tmpdir(), 'dsh-ar-aging-unit')
 
 test('the bundled AR ledger produces the documented aging totals', async () => {
-  const report = await toolMap(baseDir)['ar.aging'].execute({ path: sample, as_of: '2026-06-30' }, exec)
+  const report = await toolMap(baseDir)['ar_aging'].execute({ path: sample, as_of: '2026-06-30' }, exec)
   assert.equal(report.as_of, '2026-06-30')
   assert.equal(report.currency, 'CNY')
   assert.equal(report.totals.invoices, 13)
@@ -25,7 +25,7 @@ test('the bundled AR ledger produces the documented aging totals', async () => {
 })
 
 test('bucket counts, amounts and shares reconcile to the outstanding total', async () => {
-  const report = await toolMap(baseDir)['ar.aging'].execute(
+  const report = await toolMap(baseDir)['ar_aging'].execute(
     { path: sample, as_of: '2026-06-30' },
     exec,
   )
@@ -45,7 +45,7 @@ test('bucket counts, amounts and shares reconcile to the outstanding total', asy
 })
 
 test('customer summary is sorted by outstanding and carries per-bucket amounts', async () => {
-  const report = await toolMap(baseDir)['ar.aging'].execute(
+  const report = await toolMap(baseDir)['ar_aging'].execute(
     { path: sample, as_of: '2026-06-30' },
     exec,
   )
@@ -64,7 +64,7 @@ test('customer summary is sorted by outstanding and carries per-bucket amounts',
 
 test('top overdue customers are ranked by overdue amount and honour top_n', async () => {
   const tools = toolMap(baseDir)
-  const report = await tools['ar.aging'].execute({ path: sample, as_of: '2026-06-30', top_n: 3 }, exec)
+  const report = await tools['ar_aging'].execute({ path: sample, as_of: '2026-06-30', top_n: 3 }, exec)
   assert.equal(report.top_overdue.length, 3)
   assert.deepEqual(
     report.top_overdue.map((customer) => [customer.customer, customer.overdue_cents, customer.overdue_invoices]),
@@ -75,16 +75,16 @@ test('top overdue customers are ranked by overdue amount and honour top_n', asyn
     ],
   )
   assert.equal(report.top_overdue[0].max_days_past_due, 177)
-  const clampedLow = await tools['ar.aging'].execute({ path: sample, as_of: '2026-06-30', top_n: 0 }, exec)
+  const clampedLow = await tools['ar_aging'].execute({ path: sample, as_of: '2026-06-30', top_n: 0 }, exec)
   assert.equal(clampedLow.top_overdue.length, 1)
-  const clampedHigh = await tools['ar.aging'].execute({ path: sample, as_of: '2026-06-30', top_n: 999 }, exec)
+  const clampedHigh = await tools['ar_aging'].execute({ path: sample, as_of: '2026-06-30', top_n: 999 }, exec)
   assert.equal(clampedHigh.top_overdue.length, 6)
 })
 
 test('a fully settled ledger reports zero outstanding and an empty top list', async (t) => {
   const dir = await makeTemp(t)
   const file = await writeLedger(dir, 'settled.csv', ['甲公司,INV-1,2026-06-01,2026-07-01,100000,CNY,100000'])
-  const report = await toolMap(path.join(dir, 'store'))['ar.aging'].execute(
+  const report = await toolMap(path.join(dir, 'store'))['ar_aging'].execute(
     { path: file, as_of: '2026-06-30' },
     exec,
   )

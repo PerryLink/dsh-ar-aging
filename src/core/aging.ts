@@ -91,7 +91,7 @@ export function classifyInvoice(invoice: ArInvoice, asOfMs: number): OpenInvoice
   }
 }
 
-/** Build the single source of truth for `ar.aging` and `ar.export`. */
+/** Build the single source of truth for `ar_aging` and `ar_export`. */
 export function buildAgingContext(dataset: ArDataset, asOfValue: string): AgingContext {
   const asOfMs = parseIsoDate(asOfValue, 'as_of')
   const asOf = formatIsoDate(asOfMs)

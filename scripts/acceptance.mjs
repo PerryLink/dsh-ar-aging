@@ -36,10 +36,10 @@ async function main() {
     const exec = { callId: 'acceptance' }
     const asOf = '2026-06-30'
 
-    const ingest = await tools['ar.ingest'].execute({ path: sample }, exec)
-    const aging = await tools['ar.aging'].execute({ path: sample, as_of: asOf }, exec)
-    const summary = await tools['ar.export'].execute({ path: sample, as_of: asOf, filename: 'acceptance-summary.csv' }, exec)
-    const detail = await tools['ar.export'].execute(
+    const ingest = await tools['ar_ingest'].execute({ path: sample }, exec)
+    const aging = await tools['ar_aging'].execute({ path: sample, as_of: asOf }, exec)
+    const summary = await tools['ar_export'].execute({ path: sample, as_of: asOf, filename: 'acceptance-summary.csv' }, exec)
+    const detail = await tools['ar_export'].execute(
       { path: sample, as_of: asOf, filename: 'acceptance-detail.csv', layout: 'detail' },
       exec,
     )
@@ -111,32 +111,32 @@ async function main() {
         req_id: 'AR-A07',
         metric: 'bad CSV row',
         threshold: 'E_AR_CSV_ROW',
-        actual: await errorCode(tools['ar.ingest'].execute({ path: badRowFile }, exec)),
-        pass: (await errorCode(tools['ar.ingest'].execute({ path: badRowFile }, exec))) === 'E_AR_CSV_ROW',
+        actual: await errorCode(tools['ar_ingest'].execute({ path: badRowFile }, exec)),
+        pass: (await errorCode(tools['ar_ingest'].execute({ path: badRowFile }, exec))) === 'E_AR_CSV_ROW',
       },
       {
         req_id: 'AR-A08',
         metric: 'invalid date',
         threshold: 'E_AR_DATE_INVALID',
-        actual: await errorCode(tools['ar.ingest'].execute({ path: badDateFile }, exec)),
-        pass: (await errorCode(tools['ar.ingest'].execute({ path: badDateFile }, exec))) === 'E_AR_DATE_INVALID',
+        actual: await errorCode(tools['ar_ingest'].execute({ path: badDateFile }, exec)),
+        pass: (await errorCode(tools['ar_ingest'].execute({ path: badDateFile }, exec))) === 'E_AR_DATE_INVALID',
       },
       {
         req_id: 'AR-A09',
         metric: 'invalid amount',
         threshold: 'E_AR_AMOUNT',
-        actual: await errorCode(tools['ar.ingest'].execute({ path: badAmountFile }, exec)),
-        pass: (await errorCode(tools['ar.ingest'].execute({ path: badAmountFile }, exec))) === 'E_AR_AMOUNT',
+        actual: await errorCode(tools['ar_ingest'].execute({ path: badAmountFile }, exec)),
+        pass: (await errorCode(tools['ar_ingest'].execute({ path: badAmountFile }, exec))) === 'E_AR_AMOUNT',
       },
       {
         req_id: 'AR-A10',
         metric: 'export path safety',
         threshold: 'traversal rejected',
         actual: await errorCode(
-          tools['ar.export'].execute({ path: sample, as_of: asOf, filename: '../evil.csv' }, exec),
+          tools['ar_export'].execute({ path: sample, as_of: asOf, filename: '../evil.csv' }, exec),
         ),
         pass:
-          (await errorCode(tools['ar.export'].execute({ path: sample, as_of: asOf, filename: '../evil.csv' }, exec))) ===
+          (await errorCode(tools['ar_export'].execute({ path: sample, as_of: asOf, filename: '../evil.csv' }, exec))) ===
           'E_AR_PATH_INVALID',
       },
     ]

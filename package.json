@@ -1,6 +1,6 @@
 {
   "name": "dsh-ar-aging",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "AR ledger ingest, age-bucket report, customer summary, overdue ratio and top overdue customers; local CSV only.",
   "type": "module",
   "main": "./lib/plugin/index.js",
