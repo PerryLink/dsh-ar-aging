@@ -136,6 +136,11 @@ node samples/quickstart/run.mjs --check
 
 ![dsh-ar-aging quickstart 真实运行输出](docs/assets/quickstart.png)
 
+![dsh-ar-aging quickstart 真实运行输出](docs/assets/dsh-ar-aging-demo.gif)
+
+*同一段真实运行的动图版本。*
+
+
 样例是 13 行合成应收明细、6 个客户、单一币种 CNY，覆盖全部 5 个分桶、1 张部分收款、2 张已结清，以及一个带逗号的客户名（`江南纺织, 苏州`，用于验证 CSV 引号转义）。金标 `samples/quickstart/expected/result.json` 由 `node samples/quickstart/run.mjs --json` 真实产生，不是手写。截图就是上面这条命令的真实输出（原始日志见 [`docs/assets/quickstart.log`](docs/assets/quickstart.log)）。
 
 ## 配置

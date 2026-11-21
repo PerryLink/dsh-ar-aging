@@ -141,6 +141,11 @@ node samples/quickstart/run.mjs --check
 
 ![dsh-ar-aging quickstart terminal output](docs/assets/quickstart.png)
 
+![dsh-ar-aging quickstart terminal output](docs/assets/dsh-ar-aging-demo.gif)
+
+*The animated version of the same run.*
+
+
 The sample is a 13-row synthetic ledger with 6 customers in one currency (CNY). It covers all five buckets, one partial payment, two settled invoices and a customer name with a comma, quoted per RFC 4180 (verbatim from `samples/quickstart/input/ar-ledger.csv`):
 
 ```text

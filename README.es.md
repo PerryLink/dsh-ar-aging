@@ -142,6 +142,11 @@ node samples/quickstart/run.mjs --check
 
 ![Salida real en terminal del quickstart de dsh-ar-aging](docs/assets/quickstart.png)
 
+![Salida real en terminal del quickstart de dsh-ar-aging](docs/assets/dsh-ar-aging-demo.gif)
+
+*La versión animada de la misma ejecución.*
+
+
 El ejemplo es un libro sintético de 13 filas con 6 clientes en una sola moneda (CNY). Cubre los cinco tramos, un cobro parcial, dos facturas liquidadas y un nombre de cliente con coma, entrecomillado según RFC 4180 (texto literal de `samples/quickstart/input/ar-ledger.csv`):
 
 ```text

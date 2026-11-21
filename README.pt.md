@@ -142,6 +142,11 @@ node samples/quickstart/run.mjs --check
 
 ![Saída real em terminal do quickstart do dsh-ar-aging](docs/assets/quickstart.png)
 
+![Saída real em terminal do quickstart do dsh-ar-aging](docs/assets/dsh-ar-aging-demo.gif)
+
+*A versão animada da mesma execução.*
+
+
 O exemplo é um razão sintético de 13 linhas com 6 clientes em uma única moeda (CNY). Cobre as cinco faixas, um pagamento parcial, duas faturas liquidadas e um nome de cliente com vírgula, entre aspas conforme RFC 4180 (texto literal de `samples/quickstart/input/ar-ledger.csv`):
 
 ```text

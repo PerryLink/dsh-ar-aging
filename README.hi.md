@@ -142,6 +142,11 @@ node samples/quickstart/run.mjs --check
 
 ![dsh-ar-aging quickstart का वास्तविक टर्मिनल आउटपुट](docs/assets/quickstart.png)
 
+![dsh-ar-aging quickstart का वास्तविक टर्मिनल आउटपुट](docs/assets/dsh-ar-aging-demo.gif)
+
+*उसी असली रन का एनिमेटेड संस्करण।*
+
+
 नमूना एक मुद्रा (CNY) में 6 ग्राहकों वाला 13-पंक्तियों का सिंथेटिक लेजर है। इसमें पाँचों श्रेणियाँ, एक आंशिक भुगतान, दो निपटी इनवॉइस और अल्पविराम वाला एक ग्राहक नाम शामिल है, जो RFC 4180 के अनुसार उद्धृत है (`samples/quickstart/input/ar-ledger.csv` से हूबहू):
 
 ```text
