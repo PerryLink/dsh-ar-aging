@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Ar aging",
+    "description": "把应收明细 CSV 变成账龄表：分桶、客户汇总、逾期占比、Top 逾期客户，再导出 CSV。"
+  }
+}

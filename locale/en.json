@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Ar aging",
+    "description": "Turn an AR ledger CSV into an aging report: buckets, customer summary, overdue ratio and top overdue customers, then export CSV."
+  }
+}
