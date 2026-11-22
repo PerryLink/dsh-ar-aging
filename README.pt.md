@@ -11,6 +11,8 @@
 
 Uma ferramenta de aging de contas a receber puramente local para DeepSeek Harness: três ferramentas leem um CSV local, calculam a idade a partir da data da fatura e o vencimento a partir da data de vencimento — sem rede, sem chamada de modelo, sem upload.
 
+Última verificação: DeepSeek Harness `dsh-v0.2.3-alpha.1` (2026-11-22).
+
 [Instalar](#instalação-em-três-passos) · [Configuração](#configuração) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -145,7 +147,6 @@ node samples/quickstart/run.mjs --check
 ![Saída real em terminal do quickstart do dsh-ar-aging](docs/assets/dsh-ar-aging-demo.gif)
 
 *A versão animada da mesma execução.*
-
 
 O exemplo é um razão sintético de 13 linhas com 6 clientes em uma única moeda (CNY). Cobre as cinco faixas, um pagamento parcial, duas faturas liquidadas e um nome de cliente com vírgula, entre aspas conforme RFC 4180 (texto literal de `samples/quickstart/input/ar-ledger.csv`):
 
@@ -301,7 +302,7 @@ node --test test/*.test.mjs
 node scripts/gate.mjs
 ```
 
-Versão atual `0.2.0`; 54 testes passando (`node --test test/*.test.mjs`). Portão de publicação: `node scripts/gate.mjs` (lint de metadados + todas as linhas públicas de aceitação passando + os quatro códigos de erro estáveis exercitados). O banner e o diagrama de estrutura são gerados programaticamente por [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Pillow para os quatro banners webp de 1440x576, SVG escrito à mão para o diagrama claro/escuro de 1100x660) e podem ser reexecutados sem risco; `docs/assets/quickstart.png` é uma captura real, mantida junto com `docs/assets/quickstart.log`.
+Versão atual `0.2.1`; 54 testes passando (`node --test test/*.test.mjs`). Portão de publicação: `node scripts/gate.mjs` (lint de metadados + todas as linhas públicas de aceitação passando + os quatro códigos de erro estáveis exercitados). O banner e o diagrama de estrutura são gerados programaticamente por [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Pillow para os quatro banners webp de 1440x576, SVG escrito à mão para o diagrama claro/escuro de 1100x660) e podem ser reexecutados sem risco; `docs/assets/quickstart.png` é uma captura real, mantida junto com `docs/assets/quickstart.log`.
 
 Topics: `dsh`, `dsh-plugin`, `deepseek-harness`, `accounts-receivable`, `ar-aging`, `aging-report`, `finance`, `csv`, `perrylink`
 

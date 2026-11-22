@@ -16,7 +16,7 @@ check(pkg.dsh?.bundle?.patch === './cordis.patch.yml', 'dsh.bundle.patch missing
 check(!pkg.dsh?.client, 'this package must not declare a client bundle')
 check(existsSync('cordis.patch.yml'), 'cordis.patch.yml is missing')
 check(pkg.engines?.node === '>=24.9.0 <25', 'engines.node must be >=24.9.0 <25')
-check(pkg.engines?.dsh === '>=0.2.1-rc.3 <0.4.0', 'engines.dsh must be >=0.2.1-rc.3 <0.4.0')
+check(pkg.engines?.dsh === '>=0.2.1-rc.3 <0.4.0 || >=0.2.3-0 <0.3.0-0', 'engines.dsh must be >=0.2.1-rc.3 <0.4.0')
 check(Object.keys(pkg.dependencies ?? {}).length === 0, 'dsh-ar-aging must have no runtime dependencies')
 
 const demo = pkg.dsh?.demo

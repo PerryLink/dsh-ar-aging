@@ -11,6 +11,8 @@
 
 DeepSeek Harness के लिए पूरी तरह लोकल AR एजिंग टूल: तीन टूल एक लोकल CSV पढ़ते हैं, इनवॉइस तिथि से आयु और देय तिथि से अतिदेय मापते हैं — कोई नेटवर्क नहीं, कोई मॉडल कॉल नहीं, कोई अपलोड नहीं।
 
+अंतिम सत्यापन: DeepSeek Harness `dsh-v0.2.3-alpha.1` (2026-11-22).
+
 [इंस्टॉल](#तीन-चरणों-में-शुरुआत) · [कॉन्फ़िगरेशन](#कॉन्फ़िगरेशन) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -145,7 +147,6 @@ node samples/quickstart/run.mjs --check
 ![dsh-ar-aging quickstart का वास्तविक टर्मिनल आउटपुट](docs/assets/dsh-ar-aging-demo.gif)
 
 *उसी असली रन का एनिमेटेड संस्करण।*
-
 
 नमूना एक मुद्रा (CNY) में 6 ग्राहकों वाला 13-पंक्तियों का सिंथेटिक लेजर है। इसमें पाँचों श्रेणियाँ, एक आंशिक भुगतान, दो निपटी इनवॉइस और अल्पविराम वाला एक ग्राहक नाम शामिल है, जो RFC 4180 के अनुसार उद्धृत है (`samples/quickstart/input/ar-ledger.csv` से हूबहू):
 
@@ -301,7 +302,7 @@ node --test test/*.test.mjs
 node scripts/gate.mjs
 ```
 
-वर्तमान संस्करण `0.2.0`; 54 परीक्षण पास (`node --test test/*.test.mjs`)। रिलीज़ गेट: `node scripts/gate.mjs` (मेटाडेटा lint + सभी सार्वजनिक स्वीकृति पंक्तियाँ पास + चारों स्थिर त्रुटि कोड प्रयुक्त)। बैनर और संरचना आरेख [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) द्वारा प्रोग्रामेटिक रूप से बनते हैं (चार 1440x576 webp बैनर Pillow से, 1100x660 हल्का/गहरा आरेख हाथ से लिखे SVG से) और सुरक्षित रूप से दोबारा चलाए जा सकते हैं; `docs/assets/quickstart.png` वास्तविक कैप्चर किया गया स्क्रीनशॉट है, `docs/assets/quickstart.log` के साथ सुरक्षित।
+वर्तमान संस्करण `0.2.1`; 54 परीक्षण पास (`node --test test/*.test.mjs`)। रिलीज़ गेट: `node scripts/gate.mjs` (मेटाडेटा lint + सभी सार्वजनिक स्वीकृति पंक्तियाँ पास + चारों स्थिर त्रुटि कोड प्रयुक्त)। बैनर और संरचना आरेख [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) द्वारा प्रोग्रामेटिक रूप से बनते हैं (चार 1440x576 webp बैनर Pillow से, 1100x660 हल्का/गहरा आरेख हाथ से लिखे SVG से) और सुरक्षित रूप से दोबारा चलाए जा सकते हैं; `docs/assets/quickstart.png` वास्तविक कैप्चर किया गया स्क्रीनशॉट है, `docs/assets/quickstart.log` के साथ सुरक्षित।
 
 Topics: `dsh`, `dsh-plugin`, `deepseek-harness`, `accounts-receivable`, `ar-aging`, `aging-report`, `finance`, `csv`, `perrylink`
 
